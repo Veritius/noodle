@@ -1,4 +1,5 @@
 use core::ops::{Deref, DerefMut};
+use super::*;
 
 /// A generator for [`NodeId`] values.
 pub struct NodeIdGenerator {
@@ -53,8 +54,14 @@ impl NodeIdGenerator {
 pub struct NodeId(usize);
 
 /// A node type.
-pub trait Node {
+pub trait Node: Dirty {
+    /// Returns an iterator over the output sockets of the node.
+    /// This does not include any values, cached or otherwise.
+    fn iter_inputs(&self) -> SocketIter;
 
+    /// Returns an iterator over the output sockets of the node.
+    /// This does not include any values, cached or otherwise.
+    fn iter_outputs(&self) -> SocketIter;
 }
 
 /// A reference to a [`Node`] object.

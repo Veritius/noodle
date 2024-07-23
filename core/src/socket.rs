@@ -1,4 +1,5 @@
 use core::marker::PhantomData;
+use alloc::boxed::Box;
 use super::*;
 
 /// An ID for a socket between two [nodes](crate::graph::Node).
@@ -56,7 +57,7 @@ impl SocketShape {
     }
 }
 
-/// A socket controlled by a [`Node`](crate::graph::Node).
+/// A socket controlled by a [`Node`](crate::Node).
 pub struct Socket<'a> {
     /// The ID of the socket.
     pub id: SocketId,
@@ -69,4 +70,24 @@ pub struct Socket<'a> {
 
     #[doc(hidden)]
     pub phantom: PhantomData<&'a ()>,
+}
+
+/// An iterator over a set of [`Socket`] handles.
+pub struct SocketIter<'a> {
+    iter: Box<dyn Iterator<Item = Socket<'a>> + 'a>,
+}
+
+impl<'a> Iterator for SocketIter<'a> {
+    type Item = Socket<'a>;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        self.iter.next()
+    }
+}
+
+impl<'a> From<Box<dyn Iterator<Item = Socket<'a>> + 'a>> for SocketIter<'a> {
+    fn from(value: Box<dyn Iterator<Item = Socket<'a>> + 'a>) -> Self {
+        Self { iter: value }
+    }
 }
