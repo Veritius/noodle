@@ -14,7 +14,7 @@ mod store;
 mod value;
 
 #[cfg(feature="std")]
-mod hgraph;
+pub mod hgraph;
 
 pub use dirty::*;
 pub use group::*;
@@ -23,6 +23,3 @@ pub use socket::*;
 pub use solve::*;
 pub use store::*;
 pub use value::*;
-
-#[cfg(feature="std")]
-pub use hgraph::*;
