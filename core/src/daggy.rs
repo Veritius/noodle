@@ -39,7 +39,7 @@ impl Graph for VectorGraph {
         todo!()
     }
 
-    fn insert_link(&mut self, id: LinkId) {
+    fn insert_link(&mut self, id: LinkId) -> Result<(), WouldCycle> {
         todo!()
     }
 
@@ -56,4 +56,11 @@ impl Graph for VectorGraph {
     fn reserve_nodes_exact(&mut self, amt: usize) {}
     fn reserve_links(&mut self, amt: usize) {}
     fn reserve_links_exact(&mut self, amt: usize) {}
+}
+
+impl<E> From<daggy::WouldCycle<E>> for WouldCycle {
+    #[inline]
+    fn from(_value: daggy::WouldCycle<E>) -> Self {
+        WouldCycle
+    }
 }

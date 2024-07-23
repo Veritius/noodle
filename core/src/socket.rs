@@ -110,3 +110,16 @@ pub struct LinkId {
     /// The right socket.
     pub to: NodeSocketId,
 }
+
+/// Returned when adding a link would form a cycle in the graph.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct WouldCycle;
+
+impl core::fmt::Display for WouldCycle {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.write_str("would cycle")
+    }
+}
+
+#[cfg(feature="std")]
+impl std::error::Error for WouldCycle {}

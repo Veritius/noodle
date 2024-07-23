@@ -30,7 +30,7 @@ pub trait Graph {
     fn reserve_nodes_exact(&mut self, amt: usize);
 
     /// Inserts a link between a pair of sockets on two nodes.
-    fn insert_link(&mut self, id: LinkId);
+    fn insert_link(&mut self, id: LinkId) -> Result<(), WouldCycle>;
 
     /// Removes a link between a pair of sockets on two nodes.
     fn remove_link(&mut self, id: LinkId);
