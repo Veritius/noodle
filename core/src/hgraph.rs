@@ -3,7 +3,7 @@ use std::{collections::{HashMap, HashSet}, hash::RandomState};
 use crate::*;
 
 /// A [`HashMap`] backed graph structure.
-pub struct HashGraph<S = RandomState> {
+pub struct HashGraph<S: BuildHasher = RandomState> {
     nodes: HashMap<NodeId, Box<dyn Node>, S>,
     links: HashSet<LinkId, S>,
 
