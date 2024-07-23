@@ -6,10 +6,6 @@ authors=["Veritius <veritiusgaming@gmail.com>"]
 license="MIT OR Apache-2.0"
 description="Computational node graphs"
 
-[dependencies.portable-atomic]
-version = "1.7"
-optional = true
-
 [features]
 # Feature sets
 default=[]
@@ -17,6 +13,3 @@ default=[]
 # Major features
 std = []
 runtime_types = []
-
-# Minor features
-use_atomics = ["dep:portable-atomic"]
