@@ -10,12 +10,17 @@ description="Computational node graphs"
 version = "1.7"
 optional = true
 
+[dependencies.petgraph]
+version = "0.6"
+optional = true
+
 [features]
 # Feature sets
 default=[]
 
 # Major features
 std = []
+petgraph = ["std", "dep:petgraph"]
 runtime_types = []
 
 # Minor features

@@ -3,7 +3,7 @@ use super::*;
 
 /// An identifier for a [`Node`].
 /// Unique only to ids generated with the same [`NodeIdGenerator`].
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct NodeId(pub usize);
 
 /// A node type.
