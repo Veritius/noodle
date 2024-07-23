@@ -4,7 +4,7 @@ use super::*;
 /// An identifier for a [`Node`].
 /// Unique only to ids generated with the same [`NodeIdGenerator`].
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct NodeId(pub usize);
+pub struct NodeId(pub u32);
 
 /// A node type.
 pub trait Node: Dirty {

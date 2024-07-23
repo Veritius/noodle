@@ -4,7 +4,7 @@ use super::*;
 
 /// An ID for a socket between two [nodes](crate::graph::Node).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct SocketId(pub u32);
+pub struct SocketId(pub u16);
 
 /// The shape of the socket.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

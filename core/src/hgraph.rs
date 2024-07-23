@@ -7,7 +7,7 @@ pub struct HashGraph<S: BuildHasher = RandomState> {
     nodes: HashMap<NodeId, Box<dyn Node>, S>,
     links: HashSet<LinkId, S>,
 
-    node_idx: usize,
+    node_idx: u32,
 }
 
 impl<S: BuildHasher> Graph for HashGraph<S> {
