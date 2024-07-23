@@ -12,7 +12,6 @@ default=[]
 
 # Major features
 std = []
-runtime_types = []
 
 # Impls for remote crates
 petgraph = ["std", "dep:petgraph"]

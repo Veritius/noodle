@@ -21,7 +21,4 @@ impl ValueTypeId {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 enum ValueTypeInner {
     CompileType(TypeId),
-
-    #[cfg(feature="runtime_types")]
-    RuntimeType(u128),
 }
