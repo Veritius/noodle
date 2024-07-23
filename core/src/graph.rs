@@ -50,7 +50,7 @@ pub trait Graph {
     fn reserve_links_exact(&mut self, amt: usize);
 }
 
-/// Permits access to a [`Graph`] for advanced usage.
+/// A [`Graph`] with an **unsafe** API for advanced usage.
 pub trait UnsafeGraph: Graph {
     /// The type returned to allow mutation.
     type Access<'a>: UnsafeGraphAccess<'a> where Self: 'a;
