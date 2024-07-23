@@ -1,7 +1,7 @@
 use alloc::boxed::Box;
 use super::*;
 
-/// Data storage for a node graph.
+/// A directed acyclic graph structure.
 pub trait Graph {
     /// Add a node to the graph.
     fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId;

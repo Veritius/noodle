@@ -13,8 +13,11 @@ mod solve;
 mod graph;
 mod value;
 
-#[cfg(feature="std")]
-pub mod hash_graph;
+#[cfg(feature="petgraph")]
+mod petgraph;
+
+#[cfg(feature="daggy")]
+mod daggy;
 
 pub use dirty::*;
 pub use group::*;
@@ -23,3 +26,6 @@ pub use socket::*;
 pub use solve::*;
 pub use graph::*;
 pub use value::*;
+
+#[cfg(feature="daggy")]
+pub use daggy::*;
