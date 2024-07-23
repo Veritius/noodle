@@ -30,16 +30,13 @@ pub trait Graph {
     fn reserve_nodes_exact(&mut self, amt: usize);
 
     /// Inserts a link between a pair of sockets on two nodes.
-    fn insert_link(&mut self, from: NodeSocketId, to: NodeSocketId);
+    fn insert_link(&mut self, id: LinkId);
 
     /// Removes a link between a pair of sockets on two nodes.
-    fn remove_link(&mut self, from: NodeSocketId, to: NodeSocketId);
+    fn remove_link(&mut self, id: LinkId);
 
     /// Returns `true` if a pair of sockets on two sides are linked.
-    fn has_link(&self, from: NodeSocketId, to: NodeSocketId) -> bool;
-
-    /// Returns a reference to a link, if it exists.
-    fn get_link(&self, from: NodeSocketId, to: NodeSocketId) -> Option<Link>;
+    fn has_link(&self, id: LinkId) -> bool;
 
     /// Reserve space for at least `amt` nodes.
     /// Does nothing if capacity is already sufficient.

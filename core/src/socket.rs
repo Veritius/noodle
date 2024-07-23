@@ -93,6 +93,7 @@ impl<'a> From<Box<dyn Iterator<Item = Socket<'a>> + 'a>> for SocketIter<'a> {
 }
 
 /// A paired [`NodeId`] and [`SocketId`] for identifying sockets.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct NodeSocketId {
     /// The node the socket belongs to.
     pub node: NodeId,
@@ -100,17 +101,12 @@ pub struct NodeSocketId {
     pub socket: SocketId,
 }
 
-/// A link between two sockets.
-pub struct Link<'a> {
-    /// The socket the first end of the link is connected to.
-    pub from: SocketId,
+/// A pair of [`NodeSocketId`], identifying a link between sockets.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct LinkId {
+    /// The left socket.
+    pub from: NodeSocketId,
 
-    /// The socket the second end of the link is connected to.
-    pub to: SocketId,
-
-    /// The type of data the link carries.
-    pub vtype: ValueTypeId,
-
-    #[doc(hidden)]
-    pub phantom: PhantomData<&'a ()>,
+    /// The right socket.
+    pub to: NodeSocketId,
 }
