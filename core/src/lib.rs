@@ -7,7 +7,6 @@ extern crate alloc;
 
 mod dirty;
 mod group;
-mod link;
 mod node;
 mod socket;
 mod solve;
@@ -16,7 +15,6 @@ mod value;
 
 pub use dirty::*;
 pub use group::*;
-pub use link::*;
 pub use node::*;
 pub use socket::*;
 pub use solve::*;

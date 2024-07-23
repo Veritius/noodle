@@ -91,3 +91,26 @@ impl<'a> From<Box<dyn Iterator<Item = Socket<'a>> + 'a>> for SocketIter<'a> {
         Self { iter: value }
     }
 }
+
+/// A paired [`NodeId`] and [`SocketId`] for identifying sockets.
+pub struct NodeSocketId {
+    /// The node the socket belongs to.
+    pub node: NodeId,
+    /// The socket belonging to the node.
+    pub socket: SocketId,
+}
+
+/// A link between two sockets.
+pub struct Link<'a> {
+    /// The socket the first end of the link is connected to.
+    pub from: SocketId,
+
+    /// The socket the second end of the link is connected to.
+    pub to: SocketId,
+
+    /// The type of data the link carries.
+    pub vtype: ValueTypeId,
+
+    #[doc(hidden)]
+    pub phantom: PhantomData<&'a ()>,
+}

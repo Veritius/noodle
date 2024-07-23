@@ -66,22 +66,22 @@ pub trait Graph {
     fn reserve_nodes_exact(&mut self, amt: usize);
 
     /// Inserts a link between a pair of sockets on two nodes.
-    fn insert_link(&mut self, from: LinkId, to: LinkId);
+    fn insert_link(&mut self, from: NodeSocketId, to: NodeSocketId);
 
     /// Removes a link between a pair of sockets on two nodes.
-    fn remove_link(&mut self, from: LinkId, to: LinkId);
+    fn remove_link(&mut self, from: NodeSocketId, to: NodeSocketId);
 
     /// Returns `true` if a pair of sockets on two sides are linked.
-    fn has_link(&self, from: LinkId, to: LinkId) -> bool;
+    fn has_link(&self, from: NodeSocketId, to: NodeSocketId) -> bool;
 
     /// Returns a reference to a link, if it exists.
-    fn get_link(&self, from: LinkId, to: LinkId) -> Option<Link>;
+    fn get_link(&self, from: NodeSocketId, to: NodeSocketId) -> Option<Link>;
 
     /// Returns a reference to a link, without checking if it exists.
     /// 
     /// # Safety
     /// - The link between `from` and `to` must exist.
-    unsafe fn get_link_unchecked(&self, from: LinkId, to: LinkId) -> Link {
+    unsafe fn get_link_unchecked(&self, from: NodeSocketId, to: NodeSocketId) -> Link {
         self.get_link(from, to).unwrap_unchecked()
     }
 }
