@@ -41,10 +41,6 @@ impl Graph for StableGraph<Box<dyn Node>, (), Directed, NodeId> {
         todo!()
     }
 
-    unsafe fn get_node_unsafe(&self, id: NodeId) -> Option<NodeMut> {
-        todo!()
-    }
-
     fn reserve_nodes(&mut self, amt: usize) {
         todo!()
     }

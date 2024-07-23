@@ -15,44 +15,8 @@ pub trait Graph {
     /// Immutably access a node by its ID.
     fn get_node(&self, id: NodeId) -> Option<NodeRef>;
 
-    /// Immutably access a node by its ID, without checking that it exists.
-    /// 
-    /// # Safety
-    /// - The node associated with `id` must exist.
-    unsafe fn get_node_unchecked(&mut self, id: NodeId) -> NodeRef {
-        self.get_node(id).unwrap_unchecked()
-    }
-
     /// Mutably access a node by its ID.
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut>;
-
-    /// Mutably access a node by its ID, without checking that it exists.
-    /// 
-    /// # Safety
-    /// - The node associated with `id` must exist.
-    unsafe fn get_node_mut_unchecked(&mut self, id: NodeId) -> NodeMut {
-        self.get_node_mut(id).unwrap_unchecked()
-    }
-
-    /// Mutably access a node by its ID with an immutable reference.
-    /// 
-    /// This is intended for use in parallel/concurrent operations.
-    /// You are responsible for ensuring that mutable accesses do not overlap.
-    /// 
-    /// # Safety
-    /// - This function must not be used to violate Rust's aliasing guarantees.
-    /// - Structural changes (adding/removing nodes or links) must not occur while the reference is held.
-    unsafe fn get_node_unsafe(&self, id: NodeId) -> Option<NodeMut>;
-
-    /// Mutably access a node by its ID, without checking that it exists.
-    /// 
-    /// # Safety
-    /// - The node associated with `id` must exist.
-    /// - This function must not be used to violate Rust's aliasing guarantees.
-    /// - Structural changes (adding/removing nodes or links) must not occur while the reference is held.
-    unsafe fn get_node_unsafe_unchecked(&self, id: NodeId) -> NodeMut {
-        self.get_node_unsafe(id).unwrap_unchecked()
-    }
 
     /// Reserve space for at least `amt` nodes.
     /// Does nothing if capacity is already sufficient.
@@ -76,12 +40,4 @@ pub trait Graph {
 
     /// Returns a reference to a link, if it exists.
     fn get_link(&self, from: NodeSocketId, to: NodeSocketId) -> Option<Link>;
-
-    /// Returns a reference to a link, without checking if it exists.
-    /// 
-    /// # Safety
-    /// - The link between `from` and `to` must exist.
-    unsafe fn get_link_unchecked(&self, from: NodeSocketId, to: NodeSocketId) -> Link {
-        self.get_link(from, to).unwrap_unchecked()
-    }
 }
