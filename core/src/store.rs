@@ -63,6 +63,9 @@ pub trait UnsafeGraph: Graph {
 /// 
 /// This exists to hide a lot of the API of [`Graph`] to prevent accidental undefined behavior, such as:
 /// - Safe code using [`Graph::get_node`] while a [`NodeMut`] from [`UnsafeGraphAccess::get_unsafe`] exists.
+/// 
+/// Implementing `Graph` on any type that implements this trait is a **really bad idea.**
+/// This is because the behavior this trait exists to prevent becomes possible.
 pub trait UnsafeGraphAccess<'a> {
     /// Get mutable access normally.
     /// 
