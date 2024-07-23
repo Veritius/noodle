@@ -5,9 +5,6 @@
 
 extern crate alloc;
 
-#[cfg(feature="petgraph")]
-mod petgraph;
-
 mod dirty;
 mod group;
 mod node;
