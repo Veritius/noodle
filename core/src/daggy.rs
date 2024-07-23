@@ -9,30 +9,25 @@ pub struct VectorGraph {
 
 impl Graph for VectorGraph {
     fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
-        todo!()
+        NodeId(self.inner.add_node(node.into()).index() as u32)
     }
 
+    #[inline]
     fn remove_node(&mut self, id: NodeId) -> Option<Box<dyn Node>> {
-        todo!()
+        self.inner.remove_node(id.into())
     }
 
+    #[inline]
     fn has_node(&self, id: NodeId) -> bool {
-        todo!()
+        self.inner.contains_node(id.into())
     }
 
     fn get_node(&self, id: NodeId) -> Option<NodeRef> {
-        todo!()
+        self.inner.node_weight(id.into())
+            .map(|v| NodeRef::from(&**v))
     }
 
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut> {
-        todo!()
-    }
-
-    fn reserve_nodes(&mut self, amt: usize) {
-        todo!()
-    }
-
-    fn reserve_nodes_exact(&mut self, amt: usize) {
         todo!()
     }
 
@@ -48,11 +43,9 @@ impl Graph for VectorGraph {
         todo!()
     }
 
-    fn reserve_links(&mut self, amt: usize) {
-        todo!()
-    }
-
-    fn reserve_links_exact(&mut self, amt: usize) {
-        todo!()
-    }
+    // These don't do anything
+    fn reserve_nodes(&mut self, amt: usize) {}
+    fn reserve_nodes_exact(&mut self, amt: usize) {}
+    fn reserve_links(&mut self, amt: usize) {}
+    fn reserve_links_exact(&mut self, amt: usize) {}
 }
