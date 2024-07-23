@@ -1,6 +1,6 @@
 //! Implementations for the petgraph crate.
 
-use ::petgraph::{graph::{IndexType, NodeIndex}, stable_graph::StableGraph, Undirected};
+use ::petgraph::{graph::{IndexType, NodeIndex}, stable_graph::StableGraph, Directed};
 use crate::*;
 
 unsafe impl IndexType for NodeId {
@@ -17,7 +17,7 @@ unsafe impl IndexType for NodeId {
     }
 }
 
-impl Graph for StableGraph<Box<dyn Node>, (), Undirected, NodeId> {
+impl Graph for StableGraph<Box<dyn Node>, (), Directed, NodeId> {
     fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
         NodeId(self.add_node(node.into()).index())
     }
