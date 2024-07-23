@@ -2,9 +2,17 @@ use crate::*;
 use ::daggy;
 use daggy::stable_dag::StableDag;
 
+type GraphInner = StableDag<Box<dyn Node>, [SocketId; 2], NodeId>;
+
 /// A [`Graph`] implementation based on `daggy`'s [`StableDag`] type.
 pub struct VectorGraph {
-    inner: StableDag<Box<dyn Node>, [SocketId; 2], NodeId>
+    inner: GraphInner,
+}
+
+impl AsRef<GraphInner> for VectorGraph {
+    fn as_ref(&self) -> &GraphInner {
+        &self.inner
+    }
 }
 
 impl Graph for VectorGraph {
