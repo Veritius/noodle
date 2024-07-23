@@ -41,14 +41,6 @@ impl Graph for StableGraph<Box<dyn Node>, (), Directed, NodeId> {
         todo!()
     }
 
-    fn reserve_nodes(&mut self, amt: usize) {
-        todo!()
-    }
-
-    fn reserve_nodes_exact(&mut self, amt: usize) {
-        todo!()
-    }
-
     fn insert_link(&mut self, from: NodeSocketId, to: NodeSocketId) {
         todo!()
     }
@@ -64,4 +56,10 @@ impl Graph for StableGraph<Box<dyn Node>, (), Directed, NodeId> {
     fn get_link(&self, from: NodeSocketId, to: NodeSocketId) -> Option<Link> {
         todo!()
     }
+
+    // None of these operations do anything
+    fn reserve_nodes(&mut self, _amt: usize) {}
+    fn reserve_nodes_exact(&mut self, _amt: usize) {}
+    fn reserve_links(&mut self, _amt: usize) {}
+    fn reserve_links_exact(&mut self, _amt: usize) {}
 }

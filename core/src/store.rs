@@ -40,4 +40,15 @@ pub trait Graph {
 
     /// Returns a reference to a link, if it exists.
     fn get_link(&self, from: NodeSocketId, to: NodeSocketId) -> Option<Link>;
+
+    /// Reserve space for at least `amt` nodes.
+    /// Does nothing if capacity is already sufficient.
+    fn reserve_links(&mut self, amt: usize);
+
+    /// Reserve space for at least `amt` nodes.
+    /// Does nothing if capacity is already sufficient.
+    /// 
+    /// Unlike [`reserve_nodes`](Self::reserve_nodes), this will not
+    /// deliberately over-allocate to speculatively avoid frequent allocations.
+    fn reserve_links_exact(&mut self, amt: usize);
 }
