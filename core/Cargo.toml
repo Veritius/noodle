@@ -6,17 +6,6 @@ authors=["Veritius <veritiusgaming@gmail.com>"]
 license="MIT OR Apache-2.0"
 description="Computational node graphs"
 
-[dependencies.petgraph]
-version = "0.6"
-default-features = false
-optional = true
-
-[dependencies.daggy]
-version = "0.8"
-features = ["stable_dag"]
-default-features = false
-optional = true
-
 [features]
 # Feature sets
 default=[]
@@ -28,3 +17,14 @@ runtime_types = []
 # Impls for remote crates
 petgraph = ["std", "dep:petgraph"]
 daggy = ["petgraph", "dep:daggy"]
+
+[dependencies.petgraph]
+version = "0.6"
+default-features = false
+optional = true
+
+[dependencies.daggy]
+version = "0.8"
+features = ["stable_dag"]
+default-features = false
+optional = true
