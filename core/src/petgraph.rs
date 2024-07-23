@@ -31,16 +31,13 @@ impl Graph for StableGraph<Box<dyn Node>, (), Undirected, NodeId> {
     }
 
     fn get_node(&self, id: NodeId) -> Option<NodeRef> {
-        let idx = NodeIndex::new(id.index());
-        if !self.contains_node(idx) { return None }
-        return Some(NodeRef::from(&*self[idx]));
+        self.node_weight(NodeIndex::new(id.index()))
+            .map(|v| NodeRef::from(&**v))
     }
 
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut> {
-        // let idx = NodeIndex::new(id.index());
-        // if !self.contains_node(idx) { return None }
-        // return Some(NodeMut::from(&mut *self[idx]));
-
+        // self.node_weight_mut(NodeIndex::new(id.index()))
+        //     .map(move |v| NodeMut::from(&mut **v))
         todo!()
     }
 
