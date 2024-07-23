@@ -25,7 +25,6 @@ impl<S: BuildHasher> Graph for HashGraph<S> {
         return Some(node);
     }
 
-    #[inline]
     fn has_node(&self, id: NodeId) -> bool {
         return self.nodes.contains_key(&id);
     }
