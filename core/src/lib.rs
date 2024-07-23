@@ -10,16 +10,16 @@ mod group;
 mod node;
 mod socket;
 mod solve;
-mod store;
+mod graph;
 mod value;
 
 #[cfg(feature="std")]
-pub mod hgraph;
+pub mod hash_graph;
 
 pub use dirty::*;
 pub use group::*;
 pub use node::*;
 pub use socket::*;
 pub use solve::*;
-pub use store::*;
+pub use graph::*;
 pub use value::*;

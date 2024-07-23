@@ -1,3 +1,5 @@
+//! [`HashMap`] backed [`Graph`] implementations.
+
 use core::{hash::BuildHasher, cell::UnsafeCell};
 use std::{collections::{HashMap, HashSet}, hash::RandomState, mem::transmute};
 use crate::*;
