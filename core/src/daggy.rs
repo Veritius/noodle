@@ -1,17 +1,27 @@
 use crate::*;
 use ::daggy;
-use daggy::stable_dag::StableDag;
+use daggy::{stable_dag::StableDag, EdgeIndex};
 
-type GraphInner = StableDag<Box<dyn Node>, [SocketId; 2], NodeId>;
+type GraphInner = StableDag<Box<dyn Node>, VectorGraphEdges, NodeId>;
 
 /// A [`Graph`] implementation based on `daggy`'s [`StableDag`] type.
 pub struct VectorGraph {
     inner: GraphInner,
 }
 
-impl AsRef<GraphInner> for VectorGraph {
-    fn as_ref(&self) -> &GraphInner {
-        &self.inner
+impl VectorGraph {
+    fn edge_idx(&self, id: LinkId) -> Option<EdgeIndex<NodeId>> {
+        self.inner.find_edge(id.from.node.into(), id.to.node.into())
+    }
+
+    fn edge_weight(&self, id: LinkId) -> Option<(EdgeIndex<NodeId>, &VectorGraphEdges)> {
+        let id = self.edge_idx(id)?;
+        return Some((id, self.inner.edge_weight(id)?));
+    }
+
+    fn edge_weight_mut(&mut self, id: LinkId) -> Option<(EdgeIndex<NodeId>, &mut VectorGraphEdges)> {
+        let id = self.edge_idx(id)?;
+        return Some((id, self.inner.edge_weight_mut(id)?));
     }
 }
 
@@ -41,15 +51,48 @@ impl Graph for VectorGraph {
     }
 
     fn insert_link(&mut self, id: LinkId) -> Result<(), WouldCycle> {
-        todo!()
+        let pair = [id.from.socket, id.to.socket];
+
+        match self.edge_weight_mut(id) {
+            // Edge set exists, append to it
+            Some((_, links)) => {
+                links.insert(pair);
+                return Ok(());
+            },
+
+            // Edge doesn't exist, add it
+            None => self.inner.add_edge(
+                id.from.node.into(),
+                id.to.node.into(),
+                VectorGraphEdges::single(pair),
+            ).map(|_| ()).map_err(|e| e.into()),
+        }
     }
 
     fn remove_link(&mut self, id: LinkId) {
-        todo!()
+        let pair = [id.from.socket, id.to.socket];
+
+        match self.edge_weight_mut(id) {
+            Some((index, links)) => {
+                // Remove the link from the set
+                links.remove(&pair);
+
+                // If the links set is zero, we remove it from the graph
+                if links.len() == 0 { self.inner.remove_edge(index); }
+            },
+
+            // We don't have to do anything
+            None => return,
+        }
     }
 
     fn has_link(&self, id: LinkId) -> bool {
-        todo!()
+        let pair = [id.from.socket, id.to.socket];
+
+        match self.edge_weight(id) {
+            Some((_, links)) => links.contains(&pair),
+            None => false,
+        }
     }
 
     // These don't do anything
@@ -63,5 +106,56 @@ impl<E> From<daggy::WouldCycle<E>> for WouldCycle {
     #[inline]
     fn from(_value: daggy::WouldCycle<E>) -> Self {
         WouldCycle
+    }
+}
+
+struct VectorGraphEdges {
+    edges: Vec<[SocketId; 2]>,
+}
+
+impl VectorGraphEdges {
+    fn new() -> Self {
+        Self {
+            edges: Vec::new(),
+        }
+    }
+
+    fn single(value: [SocketId; 2]) -> Self {
+        let mut edges = Vec::with_capacity(1);
+        edges.push(value);
+
+        return Self { edges };
+    }
+
+    // returns true if the link existed
+    fn insert(&mut self, sockets: [SocketId; 2]) -> bool {
+        match self.edges.binary_search(&sockets) {
+            Ok(_) => return true,
+            Err(index) => {
+                self.edges.insert(index, sockets);
+                return false;
+            },
+        }
+    }
+
+    // returns true if the link existed
+    fn remove(&mut self, sockets: &[SocketId; 2]) -> bool {
+        match self.edges.binary_search(sockets) {
+            Ok(index) => {
+                self.edges.remove(index);
+                return true;
+            }
+            Err(_) => return false,
+        }
+    }
+
+    // returns true if the link exists
+    fn contains(&self, sockets: &[SocketId; 2]) -> bool {
+        self.edges.binary_search(sockets).is_ok()
+    }
+
+    #[inline]
+    fn len(&self) -> usize {
+        self.edges.len()
     }
 }
