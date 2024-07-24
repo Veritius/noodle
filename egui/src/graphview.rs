@@ -147,6 +147,6 @@ fn layout_view_rect(
     ui: &mut egui::Ui,
     desired_size: Vec2,
 ) -> (Rect, Response) {
-    let maximum_size = ui.available_size().max(desired_size);
+    let maximum_size = ui.available_size().min(desired_size);
     ui.allocate_exact_size(maximum_size, Sense::click_and_drag())
 }
