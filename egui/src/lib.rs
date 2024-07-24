@@ -2,5 +2,6 @@
 
 #![warn(missing_docs)]
 
+pub mod connections;
 pub mod graphview;
 pub mod nodeview;
