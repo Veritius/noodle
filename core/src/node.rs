@@ -78,3 +78,12 @@ impl<'a> From<NodeMut<'a>> for NodeRef<'a> {
         Self { inner: value.inner }
     }
 }
+
+/// A type that can produce new [`Node`] objects.
+pub trait NodeFactory {
+    /// The [discriminator](Node::discriminator) of the resulting [`Node`].
+    fn discriminator(&self) -> &str;
+
+    /// Creates a new node.
+    fn new(&self) -> Box<dyn Node>;
+}
