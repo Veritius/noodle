@@ -1,6 +1,6 @@
 //! Graph view widget.
 
-use egui::{Vec2, Widget};
+use egui::{Direction, Vec2, Widget};
 use noodle_core::Graph;
 
 /// A builder for a graph view.
@@ -8,6 +8,7 @@ pub struct GraphViewBuilder<'a, G: Graph> {
     graph: &'a mut G,
 
     max_size: Vec2,
+    direction: Direction,
 
     hard_edges: bool,
 
@@ -24,6 +25,7 @@ impl<'a, G: Graph> GraphViewBuilder<'a, G> {
             graph,
 
             max_size: Vec2::INFINITY,
+            direction: Direction::LeftToRight,
 
             hard_edges: false,
 
@@ -49,6 +51,13 @@ impl<'a, G: Graph> GraphViewBuilder<'a, G> {
     /// This is also the default.
     pub fn max_height(mut self, height: f32) -> Self {
         self.max_size.y = height;
+        return self;
+    }
+
+    /// The direction the graph is laid out in.
+    /// Defaults to [`LeftToRight`](Direction::LeftToRight).
+    pub fn direction(mut self, direction: Direction) -> Self {
+        self.direction = direction;
         return self;
     }
 
