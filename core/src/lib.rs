@@ -8,7 +8,6 @@ extern crate alloc;
 mod group;
 mod node;
 mod socket;
-mod solve;
 mod graph;
 mod value;
 
@@ -21,7 +20,6 @@ mod daggy;
 pub use group::*;
 pub use node::*;
 pub use socket::*;
-pub use solve::*;
 pub use graph::*;
 pub use value::*;
 
