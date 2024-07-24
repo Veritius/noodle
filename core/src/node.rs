@@ -6,7 +6,7 @@ use super::*;
 pub struct NodeId(pub u32);
 
 /// A node type.
-pub trait Node: Dirty {
+pub trait Node {
     /// Returns an iterator over the output sockets of the node.
     /// This does not include any values, cached or otherwise.
     fn iter_inputs(&self) -> SocketIter;

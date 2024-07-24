@@ -5,7 +5,6 @@
 
 extern crate alloc;
 
-mod dirty;
 mod group;
 mod node;
 mod socket;
@@ -19,7 +18,6 @@ mod petgraph;
 #[cfg(feature="daggy")]
 mod daggy;
 
-pub use dirty::*;
 pub use group::*;
 pub use node::*;
 pub use socket::*;
