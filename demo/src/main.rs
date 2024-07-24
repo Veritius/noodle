@@ -3,6 +3,7 @@
 #![warn(missing_docs)]
 
 mod app;
+mod settings;
 
 fn main() -> eframe::Result {
     let app = app::DemoApp::default();
