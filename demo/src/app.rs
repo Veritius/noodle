@@ -13,6 +13,16 @@ pub(super) struct DemoApp {
 
 impl eframe::App for DemoApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::TopBottomPanel::top("top_bar").show(ctx, |ui| {
+            ui.add_space(2.0);
+
+            ui.horizontal(|ui |{
+                ui.toggle_value(&mut self.show_settings, "Settings");
+            });
+
+            ui.add_space(2.0);
+        });
+
         if self.show_settings {
             egui::SidePanel::left("settings")
             .show(ctx, |ui| {
@@ -21,12 +31,6 @@ impl eframe::App for DemoApp {
         }
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            egui::menu::bar(ui, |ui| {
-                ui.checkbox(&mut self.show_settings, "Settings");
-            });
-
-            ui.add_space(6.0);
-
             GraphViewBuilder::<&_>::new(&self.graph)
                 .direction(self.settings.graph_direction)
                 .ui(ui)
