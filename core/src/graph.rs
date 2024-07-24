@@ -56,7 +56,7 @@ pub trait UnsafeGraph: Graph {
     type Access<'a>: UnsafeGraphAccess<'a> where Self: 'a;
 
     /// Gets access to an API surface for unsafe [`Graph`] mutation.
-    unsafe fn get_unsafe(&mut self, id: NodeId) -> Self::Access<'_>;
+    unsafe fn access_unsafe(&mut self, id: NodeId) -> Self::Access<'_>;
 }
 
 /// The access component of [`UnsafeGraph`].
@@ -67,6 +67,12 @@ pub trait UnsafeGraph: Graph {
 /// Implementing `Graph` on any type that implements this trait is a **really bad idea.**
 /// This is because the behavior this trait exists to prevent becomes possible.
 pub trait UnsafeGraphAccess<'a> {
+    /// Identical to [`Graph::has_node`].
+    fn has_node(&self, id: NodeId) -> bool;
+
+    /// Identical to [`Graph::has_link`].
+    fn has_link(&self, id: LinkId) -> bool;
+
     /// Get mutable access normally.
     /// 
     /// # Safety
