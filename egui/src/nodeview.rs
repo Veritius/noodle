@@ -1,5 +1,6 @@
 //! Widgets for displaying [`Node`] objects in a graphical way.
 
+use egui::Widget;
 use noodle_core::*;
 
 /// A builder for a node view.
@@ -26,5 +27,11 @@ impl<'a, N: Node> NodeViewBuilder<'a, N> {
     pub fn title(mut self, name: Option<&'a str>) -> Self {
         self.title = name;
         return self;
+    }
+}
+
+impl<'a, N: Node> Widget for NodeViewBuilder<'a, N> {
+    fn ui(self, ui: &mut egui::Ui) -> egui::Response {
+        todo!()
     }
 }
