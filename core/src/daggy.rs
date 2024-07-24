@@ -1,6 +1,7 @@
 use crate::*;
 use ::daggy;
 use daggy::{stable_dag::StableDag, EdgeIndex};
+use smallvec::SmallVec;
 
 type GraphInner = StableDag<Box<dyn Node>, VectorGraphEdges, NodeId>;
 
@@ -110,21 +111,21 @@ impl<E> From<daggy::WouldCycle<E>> for WouldCycle {
 }
 
 struct VectorGraphEdges {
-    edges: Vec<[SocketId; 2]>,
+    edges: SmallVec<[[SocketId; 2]; 4]>,
 }
 
 impl VectorGraphEdges {
     fn new() -> Self {
         Self {
-            edges: Vec::new(),
+            edges: SmallVec::new(),
         }
     }
 
     fn single(value: [SocketId; 2]) -> Self {
-        let mut edges = Vec::with_capacity(1);
-        edges.push(value);
+        let mut val = VectorGraphEdges::new();
+        val.edges.push(value);
 
-        return Self { edges };
+        return val;
     }
 
     // returns true if the link existed
