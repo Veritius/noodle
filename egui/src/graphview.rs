@@ -1,11 +1,13 @@
 //! Graph view widget.
 
-use egui::Widget;
+use egui::{Vec2, Widget};
 use noodle_core::Graph;
 
 /// A builder for a graph view.
 pub struct GraphViewBuilder<'a, G: Graph> {
     graph: &'a mut G,
+
+    max_size: Vec2,
 
     hard_edges: bool,
 
@@ -21,6 +23,8 @@ impl<'a, G: Graph> GraphViewBuilder<'a, G> {
         Self {
             graph,
 
+            max_size: Vec2::INFINITY,
+
             hard_edges: false,
 
             allow_panning: true,
@@ -28,6 +32,24 @@ impl<'a, G: Graph> GraphViewBuilder<'a, G> {
             min_zoom: 0.2,
             max_zoom: 5.0,
         }
+    }
+
+    /// Sets the maximum width of the outer frame of the graph view.
+    /// 
+    /// Use `f32::INFINITY` if you want the graph view to fit the surrounding area.
+    /// This is also the default.
+    pub fn max_width(mut self, width: f32) -> Self {
+        self.max_size.x = width;
+        return self;
+    }
+
+    /// Sets the maximum height of the outer frame of the graph view.
+    /// 
+    /// Use `f32::INFINITY` if you want the graph view to fit the surrounding area.
+    /// This is also the default.
+    pub fn max_height(mut self, height: f32) -> Self {
+        self.max_size.y = height;
+        return self;
     }
 
     /// Whether or not edges are 'hard'.
