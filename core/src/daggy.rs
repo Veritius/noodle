@@ -52,10 +52,10 @@ impl Graph for VectorGraph {
     }
 
     // These don't do anything
-    fn reserve_nodes(&mut self, amt: usize) {}
-    fn reserve_nodes_exact(&mut self, amt: usize) {}
-    fn reserve_links(&mut self, amt: usize) {}
-    fn reserve_links_exact(&mut self, amt: usize) {}
+    fn reserve_nodes(&mut self, _amt: usize) {}
+    fn reserve_nodes_exact(&mut self, _amt: usize) {}
+    fn reserve_links(&mut self, _amt: usize) {}
+    fn reserve_links_exact(&mut self, _amt: usize) {}
 }
 
 impl<E> From<daggy::WouldCycle<E>> for WouldCycle {
