@@ -4,8 +4,12 @@ use egui::{Direction, Vec2, Widget};
 use noodle_core::Graph;
 
 /// A builder for a graph view.
-pub struct GraphViewBuilder<'a, G: Graph> {
-    graph: &'a mut G,
+/// 
+/// Can be constructed from the following types:
+/// - `&G` where `G: Graph` - read-only graph view
+/// - `&mut G` where `G: Graph` - editable graph view
+pub struct GraphViewBuilder<G> {
+    graph: G,
 
     max_size: Vec2,
     direction: Direction,
@@ -18,9 +22,8 @@ pub struct GraphViewBuilder<'a, G: Graph> {
     max_zoom: f32,
 }
 
-impl<'a, G: Graph> GraphViewBuilder<'a, G> {
-    /// Creates a new [`GraphViewBuilder`].
-    pub fn new(graph: &'a mut G) -> Self {
+impl<G> GraphViewBuilder<G> {
+    fn new_inner(graph: G) -> Self {
         Self {
             graph,
 
@@ -35,7 +38,23 @@ impl<'a, G: Graph> GraphViewBuilder<'a, G> {
             max_zoom: 5.0,
         }
     }
+}
 
+impl<'a, G: Graph> GraphViewBuilder<&'a G> {
+    /// Creates a new, read-only [`GraphViewBuilder`].
+    pub fn new(graph: &'a G) -> Self {
+        Self::new_inner(graph)
+    }
+}
+
+impl<'a, G: Graph> GraphViewBuilder<&'a mut G> {
+    /// Creates a new, editable [`GraphViewBuilder`].
+    pub fn new(graph: &'a mut G) -> Self {
+        Self::new_inner(graph)
+    }
+}
+
+impl<G> GraphViewBuilder<G> {
     /// Sets the maximum width of the outer frame of the graph view.
     /// 
     /// Use `f32::INFINITY` if you want the graph view to fit the surrounding area.
@@ -105,7 +124,13 @@ impl<'a, G: Graph> GraphViewBuilder<'a, G> {
     }
 }
 
-impl<'a, G: Graph> Widget for GraphViewBuilder<'a, G> {
+impl<'a, G: Graph> Widget for GraphViewBuilder<&'a G> {
+    fn ui(self, ui: &mut egui::Ui) -> egui::Response {
+        todo!()
+    }
+}
+
+impl<'a, G: Graph> Widget for GraphViewBuilder<&'a mut G> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         todo!()
     }
