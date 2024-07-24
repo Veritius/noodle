@@ -3,3 +3,4 @@
 #![warn(missing_docs)]
 
 pub mod graphview;
+pub mod nodeview;
