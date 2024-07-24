@@ -40,6 +40,12 @@ pub struct NodeMut<'a> {
     inner: &'a mut dyn Node,
 }
 
+impl<'a> From<&'a mut Box<dyn Node>> for NodeMut<'a> {
+    fn from(value: &'a mut Box<dyn Node>) -> Self {
+        Self { inner: value.as_mut() }
+    }
+}
+
 impl<'a> From<&'a mut dyn Node> for NodeMut<'a> {
     fn from(value: &'a mut dyn Node) -> NodeMut<'a> {
         Self { inner: value }

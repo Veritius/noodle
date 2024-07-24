@@ -36,7 +36,8 @@ impl Graph for VectorGraph {
     }
 
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut> {
-        todo!()
+        self.inner.node_weight_mut(id.into())
+            .map(move |v| NodeMut::from(v))
     }
 
     fn insert_link(&mut self, id: LinkId) -> Result<(), WouldCycle> {
