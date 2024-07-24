@@ -130,7 +130,7 @@ impl<'a, G: Graph> Widget for GraphViewBuilder<&'a G> {
         let painter = ui.painter().clone()
             .with_clip_rect(rect)
             .with_layer_id(LayerId::background());
-        
+
         painter.rect_filled(rect, Rounding::same(0.0), Color32::DARK_GRAY);
 
         return bg_response
