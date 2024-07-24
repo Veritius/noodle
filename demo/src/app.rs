@@ -1,13 +1,16 @@
 use eframe::egui;
+use egui::Widget;
+use noodle_core::VectorGraph;
+use noodle_egui::graphview::GraphViewBuilder;
 
 pub(super) struct DemoApp {
-
+    pub graph: VectorGraph,
 }
 
 impl eframe::App for DemoApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.label("Hello, world!");
+            GraphViewBuilder::<&_>::new(&self.graph).ui(ui)
         });
     }
 }
@@ -15,7 +18,7 @@ impl eframe::App for DemoApp {
 impl Default for DemoApp {
     fn default() -> Self {
         Self {
-
+            graph: VectorGraph::new(),
         }
     }
 }
