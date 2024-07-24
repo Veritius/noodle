@@ -2,7 +2,10 @@ use core::marker::PhantomData;
 use alloc::boxed::Box;
 use super::*;
 
-/// An ID for a socket between two [nodes](crate::graph::Node).
+/// An ID for a socket belonging to one side of a [`Node`].
+/// 
+/// The inputs and outputs have unique ID sets.
+/// Mixing them is not recommended.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct SocketId(pub u16);
 

@@ -1,12 +1,19 @@
 use core::ops::{Deref, DerefMut};
 use super::*;
 
-/// An identifier for a [`Node`].
+/// A unique identifier for a [`Node`] within a [`Graph`].
+/// 
+/// A `NodeId` is only unique to the `Graph` that its `Node` exists in.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct NodeId(pub u32);
 
 /// A node type.
 pub trait Node {
+    /// Returns a `str` that identifies the node type.
+    /// 
+    /// To identify an instance of a node, use [`NodeId`].
+    fn discriminator(&self) -> &str;
+
     /// Returns an iterator over the output sockets of the node.
     /// This does not include any values, cached or otherwise.
     fn iter_inputs(&self) -> SocketIter;
