@@ -1,60 +1,26 @@
 use core::ops::{Deref, DerefMut};
+use super::*;
 
-/// A generator for [`NodeId`] values.
-pub struct NodeIdGenerator {
-    #[cfg(not(feature="use_atomics"))]
-    idx: usize,
-
-    #[cfg(feature="use_atomics")]
-    idx: portable_atomic::AtomicUsize,
-}
-
-impl Default for NodeIdGenerator {
-    fn default() -> Self {
-        Self {
-            #[cfg(not(feature="use_atomics"))]
-            idx: usize::default(),
-
-            #[cfg(feature="use_atomics")]
-            idx: portable_atomic::AtomicUsize::default(),
-        }
-    }
-}
-
-impl NodeIdGenerator {
-    /// Generate a new [`NodeId`] for use.
-    pub fn next(&mut self) -> NodeId {
-        #[cfg(not(feature="use_atomics"))] {
-            let v = self.idx;
-            self.idx += 1;
-            return NodeId(v);
-        }
-
-        #[cfg(feature="use_atomics")] {
-            let v = *self.idx.get_mut();
-            self.idx.get_mut();
-            return NodeId(v);
-        }
-    }
-
-    /// Generate a new [`NodeId`] for use using atomic operations.
-    /// Since this uses atomic operations, this can be done with an immutable borrow.
-    #[cfg(feature="use_atomics")]
-    pub fn next_atomic(&self) -> NodeId {
-        use core::sync::atomic::Ordering;
-        let v = self.idx.fetch_add(1, Ordering::AcqRel);
-        return NodeId(v);
-    }
-}
-
-/// An identifier for a [`Node`].
-/// Unique only to ids generated with the same [`NodeIdGenerator`].
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct NodeId(usize);
+/// A unique identifier for a [`Node`] within a [`Graph`].
+/// 
+/// A `NodeId` is only unique to the `Graph` that its `Node` exists in.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct NodeId(pub u32);
 
 /// A node type.
 pub trait Node {
+    /// Returns a `str` that identifies the node type.
+    /// 
+    /// To identify an instance of a node, use [`NodeId`].
+    fn discriminator(&self) -> &str;
 
+    /// Returns an iterator over the output sockets of the node.
+    /// This does not include any values, cached or otherwise.
+    fn iter_inputs(&self) -> SocketIter;
+
+    /// Returns an iterator over the output sockets of the node.
+    /// This does not include any values, cached or otherwise.
+    fn iter_outputs(&self) -> SocketIter;
 }
 
 /// A reference to a [`Node`] object.
@@ -79,6 +45,12 @@ impl<'a> Deref for NodeRef<'a> {
 /// A mutable reference to a [`Node`] object.
 pub struct NodeMut<'a> {
     inner: &'a mut dyn Node,
+}
+
+impl<'a> From<&'a mut Box<dyn Node>> for NodeMut<'a> {
+    fn from(value: &'a mut Box<dyn Node>) -> Self {
+        Self { inner: value.as_mut() }
+    }
 }
 
 impl<'a> From<&'a mut dyn Node> for NodeMut<'a> {

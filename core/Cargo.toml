@@ -6,17 +6,29 @@ authors=["Veritius <veritiusgaming@gmail.com>"]
 license="MIT OR Apache-2.0"
 description="Computational node graphs"
 
-[dependencies.portable-atomic]
-version = "1.7"
-optional = true
-
 [features]
 # Feature sets
 default=[]
 
 # Major features
 std = []
-runtime_types = []
 
-# Minor features
-use_atomics = ["dep:portable-atomic"]
+# Impls for remote crates
+petgraph = ["std", "dep:petgraph"]
+daggy = ["petgraph", "dep:daggy", "dep:smallvec"]
+
+[dependencies.smallvec]
+version = "1.13"
+features = ["union", "const_generics"]
+optional = true
+
+[dependencies.petgraph]
+version = "0.6"
+default-features = false
+optional = true
+
+[dependencies.daggy]
+version = "0.8"
+features = ["stable_dag"]
+default-features = false
+optional = true

@@ -5,20 +5,21 @@
 
 extern crate alloc;
 
-mod dirty;
 mod group;
-mod link;
 mod node;
 mod socket;
-mod solve;
-mod store;
-mod value;
+mod graph;
 
-pub use dirty::*;
+#[cfg(feature="petgraph")]
+mod petgraph;
+
+#[cfg(feature="daggy")]
+mod daggy;
+
 pub use group::*;
-pub use link::*;
 pub use node::*;
 pub use socket::*;
-pub use solve::*;
-pub use store::*;
-pub use value::*;
+pub use graph::*;
+
+#[cfg(feature="daggy")]
+pub use daggy::*;
