@@ -63,6 +63,11 @@ impl Graph for VectorGraph {
             .map(move |v| NodeMut::from(v))
     }
 
+    #[inline]
+    fn node_count(&self) -> usize {
+        self.inner.node_count()
+    }
+
     fn insert_link(&mut self, id: LinkId) -> Result<(), WouldCycle> {
         let pair = [id.from.socket, id.to.socket];
 
@@ -106,6 +111,15 @@ impl Graph for VectorGraph {
             Some((_, links)) => links.contains(&pair),
             None => false,
         }
+    }
+
+    #[inline]
+    fn link_count(&self) -> usize {
+        self.inner
+            .graph()
+            .edge_weights()
+            .map(|edges| edges.len())
+            .sum()
     }
 
     // These don't do anything

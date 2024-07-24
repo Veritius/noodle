@@ -18,6 +18,9 @@ pub trait Graph {
     /// Mutably access a node by its ID.
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut>;
 
+    /// Returns the number of nodes the graph contains.
+    fn node_count(&self) -> usize;
+
     /// Reserve space for at least `amt` nodes.
     /// Does nothing if capacity is already sufficient.
     fn reserve_nodes(&mut self, amt: usize);
@@ -37,6 +40,9 @@ pub trait Graph {
 
     /// Returns `true` if a pair of sockets on two sides are linked.
     fn has_link(&self, id: LinkId) -> bool;
+
+    /// Returns the number of links the graph contains.
+    fn link_count(&self) -> usize;
 
     /// Reserve space for at least `amt` nodes.
     /// Does nothing if capacity is already sufficient.
