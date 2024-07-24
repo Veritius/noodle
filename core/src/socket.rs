@@ -68,9 +68,6 @@ pub struct Socket<'a> {
     /// The shape of the socket.
     pub shape: SocketShape,
 
-    /// The type of the socket.
-    pub vtype: ValueTypeId,
-
     #[doc(hidden)]
     pub phantom: PhantomData<&'a ()>,
 }

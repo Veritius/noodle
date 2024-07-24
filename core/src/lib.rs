@@ -9,7 +9,6 @@ mod group;
 mod node;
 mod socket;
 mod graph;
-mod value;
 
 #[cfg(feature="petgraph")]
 mod petgraph;
@@ -21,7 +20,6 @@ pub use group::*;
 pub use node::*;
 pub use socket::*;
 pub use graph::*;
-pub use value::*;
 
 #[cfg(feature="daggy")]
 pub use daggy::*;
