@@ -1,6 +1,6 @@
 //! Widgets for displaying [`Graph`] objects.
 
-use egui::{Direction, Vec2, Widget};
+use egui::{Color32, Direction, LayerId, Rect, Response, Rounding, Sense, Vec2, Widget};
 use noodle_core::Graph;
 
 /// A builder for a graph view.
@@ -126,7 +126,14 @@ impl<G> GraphViewBuilder<G> {
 
 impl<'a, G: Graph> Widget for GraphViewBuilder<&'a G> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
-        todo!()
+        let (rect, bg_response) = layout_view_rect(ui, self.max_size);
+        let painter = ui.painter().clone()
+            .with_clip_rect(rect)
+            .with_layer_id(LayerId::background());
+        
+        painter.rect_filled(rect, Rounding::same(0.0), Color32::DARK_GRAY);
+
+        return bg_response
     }
 }
 
@@ -134,4 +141,12 @@ impl<'a, G: Graph> Widget for GraphViewBuilder<&'a mut G> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         todo!()
     }
+}
+
+fn layout_view_rect(
+    ui: &mut egui::Ui,
+    desired_size: Vec2,
+) -> (Rect, Response) {
+    let maximum_size = ui.available_size().max(desired_size);
+    ui.allocate_exact_size(maximum_size, Sense::click_and_drag())
 }
