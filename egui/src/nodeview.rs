@@ -5,14 +5,14 @@ use noodle_core::*;
 
 /// A builder for a node view.
 pub struct NodeViewBuilder<'a, N: Node> {
-    node: &'a N,
+    node: &'a mut N,
 
     title: Option<&'a str>,
 }
 
 impl<'a, N: Node> NodeViewBuilder<'a, N> {
     /// Creates a new [`NodeViewBuilder`].
-    pub fn new(node: &'a N) -> Self {
+    pub fn new(node: &'a mut N) -> Self {
         Self {
             node,
 

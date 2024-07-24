@@ -5,7 +5,7 @@ use noodle_core::Graph;
 
 /// A builder for a graph view.
 pub struct GraphViewBuilder<'a, G: Graph> {
-    graph: &'a G,
+    graph: &'a mut G,
 
     max_size: Vec2,
     direction: Direction,
@@ -20,7 +20,7 @@ pub struct GraphViewBuilder<'a, G: Graph> {
 
 impl<'a, G: Graph> GraphViewBuilder<'a, G> {
     /// Creates a new [`GraphViewBuilder`].
-    pub fn new(graph: &'a G) -> Self {
+    pub fn new(graph: &'a mut G) -> Self {
         Self {
             graph,
 
