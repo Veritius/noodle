@@ -25,6 +25,8 @@ impl eframe::App for DemoApp {
                 ui.checkbox(&mut self.show_settings, "Settings");
             });
 
+            ui.add_space(6.0);
+
             GraphViewBuilder::<&_>::new(&self.graph)
                 .direction(self.settings.graph_direction)
                 .ui(ui)
