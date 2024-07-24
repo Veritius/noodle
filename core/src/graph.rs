@@ -3,32 +3,23 @@ use super::*;
 
 /// A directed acyclic graph structure.
 pub trait Graph {
-    /// Check if the node is present.
-    fn has_node(&self, id: NodeId) -> bool;
-
-    /// Immutably access a node by its ID.
-    fn get_node(&self, id: NodeId) -> Option<NodeRef>;
-
-    /// Returns the number of nodes the graph contains.
-    fn node_count(&self) -> usize;
-
-    /// Returns `true` if a pair of sockets on two sides are linked.
-    fn has_link(&self, id: LinkId) -> bool;
-
-    /// Returns the number of links the graph contains.
-    fn link_count(&self) -> usize;
-}
-
-/// Mutable access to a [`Graph`].
-pub trait GraphMut: Graph {
     /// Add a node to the graph.
     fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId;
 
     /// Remove a node from the graph, breaking any links.
     fn remove_node(&mut self, id: NodeId) -> Option<Box<dyn Node>>;
 
+    /// Check if the node is present.
+    fn has_node(&self, id: NodeId) -> bool;
+
+    /// Immutably access a node by its ID.
+    fn get_node(&self, id: NodeId) -> Option<NodeRef>;
+
     /// Mutably access a node by its ID.
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut>;
+
+    /// Returns the number of nodes the graph contains.
+    fn node_count(&self) -> usize;
 
     /// Reserve space for at least `amt` nodes.
     /// Does nothing if capacity is already sufficient.
@@ -47,6 +38,12 @@ pub trait GraphMut: Graph {
     /// Removes a link between a pair of sockets on two nodes.
     fn remove_link(&mut self, id: LinkId);
 
+    /// Returns `true` if a pair of sockets on two sides are linked.
+    fn has_link(&self, id: LinkId) -> bool;
+
+    /// Returns the number of links the graph contains.
+    fn link_count(&self) -> usize;
+
     /// Reserve space for at least `amt` nodes.
     /// Does nothing if capacity is already sufficient.
     fn reserve_links(&mut self, amt: usize);
@@ -60,7 +57,7 @@ pub trait GraphMut: Graph {
 }
 
 /// A [`Graph`] with an **unsafe** API for advanced usage.
-pub trait UnsafeGraph: GraphMut {
+pub trait UnsafeGraph: Graph {
     /// The type returned to allow mutation.
     type Access<'a>: UnsafeGraphAccess<'a> where Self: 'a;
 

@@ -39,6 +39,15 @@ impl VectorGraph {
 
 // graph trait impl
 impl Graph for VectorGraph {
+    fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
+        NodeId(self.inner.add_node(node.into()).index() as u32)
+    }
+
+    #[inline]
+    fn remove_node(&mut self, id: NodeId) -> Option<Box<dyn Node>> {
+        self.inner.remove_node(id.into())
+    }
+
     #[inline]
     fn has_node(&self, id: NodeId) -> bool {
         self.inner.contains_node(id.into())
@@ -49,43 +58,14 @@ impl Graph for VectorGraph {
             .map(|v| NodeRef::from(&**v))
     }
 
-    #[inline]
-    fn node_count(&self) -> usize {
-        self.inner.node_count()
-    }
-
-    fn has_link(&self, id: LinkId) -> bool {
-        let pair = [id.from.socket, id.to.socket];
-
-        match self.edge_weight(id) {
-            Some((_, links)) => links.contains(&pair),
-            None => false,
-        }
-    }
-
-    #[inline]
-    fn link_count(&self) -> usize {
-        self.inner
-            .graph()
-            .edge_weights()
-            .map(|edges| edges.len())
-            .sum()
-    }
-}
-
-impl GraphMut for VectorGraph {
-    fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
-        NodeId(self.inner.add_node(node.into()).index() as u32)
-    }
-
-    #[inline]
-    fn remove_node(&mut self, id: NodeId) -> Option<Box<dyn Node>> {
-        self.inner.remove_node(id.into())
-    }
-
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut> {
         self.inner.node_weight_mut(id.into())
             .map(move |v| NodeMut::from(v))
+    }
+
+    #[inline]
+    fn node_count(&self) -> usize {
+        self.inner.node_count()
     }
 
     fn insert_link(&mut self, id: LinkId) -> Result<(), WouldCycle> {
@@ -122,6 +102,24 @@ impl GraphMut for VectorGraph {
             // We don't have to do anything
             None => return,
         }
+    }
+
+    fn has_link(&self, id: LinkId) -> bool {
+        let pair = [id.from.socket, id.to.socket];
+
+        match self.edge_weight(id) {
+            Some((_, links)) => links.contains(&pair),
+            None => false,
+        }
+    }
+
+    #[inline]
+    fn link_count(&self) -> usize {
+        self.inner
+            .graph()
+            .edge_weights()
+            .map(|edges| edges.len())
+            .sum()
     }
 
     // These don't do anything
