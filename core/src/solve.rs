@@ -9,5 +9,5 @@ pub trait Solver {
 /// A solver that can operate concurrently, through the use of [`UnsafeGraph`].
 pub trait ParSolver: Solver {
     /// Solve the graph for a resulting value.
-    fn solve_par<G: UnsafeGraph>(&mut self, graph: &G) -> Result<Value, ()>;
+    fn solve_par<G: UnsafeGraph>(&mut self, graph: &mut G) -> Result<Value, ()>;
 }
