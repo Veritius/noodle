@@ -1,4 +1,4 @@
-//! Graph view widget.
+//! Widgets for displaying [`Graph`] objects.
 
 use egui::{Direction, Vec2, Widget};
 use noodle_core::Graph;
