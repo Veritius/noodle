@@ -12,6 +12,7 @@ pub struct GraphViewBuilder<G> {
     graph: G,
 
     max_size: Vec2,
+    rounding: Rounding,
     direction: Direction,
 
     hard_edges: bool,
@@ -28,6 +29,7 @@ impl<G> GraphViewBuilder<G> {
             graph,
 
             max_size: Vec2::INFINITY,
+            rounding: Rounding::same(5.0),
             direction: Direction::LeftToRight,
 
             hard_edges: false,
@@ -73,7 +75,16 @@ impl<G> GraphViewBuilder<G> {
         return self;
     }
 
+    /// Sets the rounding applied to the corners of the graph view.
+    /// 
+    /// Defaults to `5.0` at all corners.
+    pub fn rounding(mut self, rounding: impl Into<Rounding>) -> Self {
+        self.rounding = rounding.into();
+        return self;
+    }
+
     /// The direction the graph is laid out in.
+    /// 
     /// Defaults to [`LeftToRight`](Direction::LeftToRight).
     pub fn direction(mut self, direction: Direction) -> Self {
         self.direction = direction;
@@ -131,7 +142,7 @@ impl<'a, G: Graph> Widget for GraphViewBuilder<&'a G> {
             .with_clip_rect(rect)
             .with_layer_id(LayerId::background());
 
-        painter.rect_filled(rect, Rounding::same(0.0), Color32::DARK_GRAY);
+        painter.rect_filled(rect, self.rounding, Color32::DARK_GRAY);
 
         return bg_response
     }
