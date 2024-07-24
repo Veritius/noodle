@@ -10,6 +10,17 @@ pub struct VectorGraph {
     inner: GraphInner,
 }
 
+// public interface
+impl VectorGraph {
+    /// Creates a new, empty [`VectorGraph`].
+    pub fn new() -> Self {
+        Self {
+            inner: GraphInner::new(),
+        }
+    }
+}
+
+// internal stuff
 impl VectorGraph {
     fn edge_idx(&self, id: LinkId) -> Option<EdgeIndex<NodeId>> {
         self.inner.find_edge(id.from.node.into(), id.to.node.into())
@@ -26,6 +37,7 @@ impl VectorGraph {
     }
 }
 
+// graph trait impl
 impl Graph for VectorGraph {
     fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
         NodeId(self.inner.add_node(node.into()).index() as u32)
