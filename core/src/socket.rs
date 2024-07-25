@@ -168,7 +168,7 @@ mod sorted {
     //! [`SortedUniqueSlice`] gets its own module so that its internals are not visible.
     //! This allows us to make confident guarantees that it follows its conditions.
 
-    use core::{cmp::Ordering, hash::Hash};
+    use core::{cmp::Ordering, hash::Hash, ops::Deref};
 
     #[derive(Clone, Copy)]
     pub(super) struct SortedUniqueSlice<'a, T: 'a>(&'a [T]);
@@ -195,6 +195,14 @@ mod sorted {
         pub fn search(&self, bs: impl FnMut(&T) -> Ordering) -> Option<&T> {
             let idx = self.0.binary_search_by(bs).ok()?;
             return Some(&self.0[idx]);
+        }
+    }
+
+    impl<'a, T: 'a> Deref for SortedUniqueSlice<'a, T> {
+        type Target = &'a [T];
+    
+        fn deref(&self) -> &Self::Target {
+            &self.0
         }
     }
 
