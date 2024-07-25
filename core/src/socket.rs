@@ -1,6 +1,7 @@
-use core::marker::PhantomData;
-use std::any::TypeId;
+use core::{marker::PhantomData, any::TypeId};
 use super::*;
+
+pub use sorted::*;
 
 /// An ID for a socket belonging to one side of a [`Node`].
 /// 
@@ -80,30 +81,28 @@ pub struct SocketRef<'a> {
 /// 
 /// A `SocketSet` must be ordered by its `id` in ascending order and have no duplicate items.
 #[derive(Clone, Copy, Hash)]
-pub struct SocketSet<'a>(&'a [SocketRef<'a>]);
+pub struct SocketSet<'a>(SortedUniqueSlice<'a, SocketRef<'a>>);
 
 impl<'a> SocketSet<'a> {
     /// Try to create a new [`SocketSet`], checking if the slice is valid.
-    pub fn new(slice: &'a [SocketRef<'a>]) -> Result<Self, InvalidSocketSet> {
-        // Simultaneously checks that the set is both in order and has no duplicates
-        if !slice.windows(2).all(|w| w[0].id < w[1].id) { return Err(InvalidSocketSet); }
-        return Ok(unsafe { Self::new_unchecked(slice) });
+    pub fn new(slice: &'a [SocketRef<'a>]) -> Result<Self, SortedUniqueSliceError> {
+        SortedUniqueSlice::new(slice, |a,b| a.id.cmp(&b.id))
+            .map(|v| Self(v))
     }
 
     /// Create a new [`SocketSet`] from a slice, without checking that it's valid.
     pub const unsafe fn new_unchecked(slice: &'a [SocketRef<'a>]) -> Self {
-        Self(slice)
+        Self(SortedUniqueSlice::new_unchecked(slice))
     }
 
     /// Gets the [`SocketRef`] for a given [`SocketId`], if present in the set.
     pub fn get(&self, id: SocketId) -> Option<SocketRef> {
-        let idx = self.0.binary_search_by(|v| v.id.cmp(&id)).ok()?;
-        return Some(self.0[idx]);
+        self.0.search(|v| v.id.cmp(&id)).cloned()
     }
 }
 
 impl<'a> TryFrom<&'a [SocketRef<'a>]> for SocketSet<'a> {
-    type Error = InvalidSocketSet;
+    type Error = SortedUniqueSliceError;
 
     #[inline(always)]
     fn try_from(slice: &'a [SocketRef<'a>]) -> Result<Self, Self::Error> {
@@ -140,9 +139,65 @@ impl core::fmt::Display for WouldCycle {
     }
 }
 
-#[cfg(feature="std")]
-impl std::error::Error for WouldCycle {}
+mod sorted {
+    //! [`SortedUniqueSlice`] gets its own module so that its internals are not visible.
+    //! This allows us to make confident guarantees that it follows its conditions.
 
-/// Error returned when the slice used to create a [`SocketSet`] did not satisfy the conditions.
-#[derive(Debug, Clone, Copy)]
-pub struct InvalidSocketSet;
+    use core::{cmp::Ordering, hash::Hash};
+
+    #[derive(Clone, Copy)]
+    pub(super) struct SortedUniqueSlice<'a, T: 'a>(&'a [T]);
+
+    impl<'a, T: 'a> SortedUniqueSlice<'a, T> {
+        pub fn new(slice: &'a [T], cmp: impl Fn(&T, &T) -> Ordering) -> Result<Self, SortedUniqueSliceError> {
+            let mut iter = slice.windows(2);
+            while let Some([a, b]) = iter.next() {
+                match cmp(a,b) {
+                    Ordering::Greater => { /* Do nothing */ },
+                    Ordering::Less => return Err(SortedUniqueSliceError::ImproperOrdering),
+                    Ordering::Equal => return Err(SortedUniqueSliceError::ContainsDuplicate),
+                }
+            }
+
+            return Ok(Self(slice));
+        }
+
+        // SAFETY: The slice must be sorted in ascending order and not contain duplicates
+        pub const unsafe fn new_unchecked(slice: &'a [T]) -> Self {
+            Self(slice)
+        }
+
+        pub fn search(&self, bs: impl FnMut(&T) -> Ordering) -> Option<&T> {
+            let idx = self.0.binary_search_by(bs).ok()?;
+            return Some(&self.0[idx]);
+        }
+    }
+
+    impl<T> Hash for SortedUniqueSlice<'_, T> where T: Hash {
+        fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
+            self.0.hash(state)
+        }
+    }
+
+    /// An error that occurred while checking a slice was correctly ordered and unique.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    pub enum SortedUniqueSliceError {
+        /// The values in the slice were not in ascending order.
+        ImproperOrdering,
+
+        /// The slice contained duplicate values.
+        ContainsDuplicate,
+    }
+
+    impl core::fmt::Display for SortedUniqueSliceError {
+        fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+            f.write_str(match self {
+                SortedUniqueSliceError::ImproperOrdering => "improper ordering",
+                SortedUniqueSliceError::ContainsDuplicate => "contains duplicate",
+            })
+        }
+    }
+
+    #[cfg(feature="std")]
+    impl std::error::Error for SortedUniqueSliceError {}
+}
