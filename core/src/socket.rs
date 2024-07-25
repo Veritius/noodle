@@ -79,7 +79,7 @@ pub struct SocketRef<'a> {
 
 /// A set of sockets.
 /// 
-/// A `SocketSet` must be ordered by its `id` in ascending order and have no duplicate items.
+/// This set is created from a slice that is sorted by its [`SocketId`] in ascending order, and contains no duplicate values.
 #[derive(Clone, Copy, Hash)]
 pub struct SocketSet<'a>(SortedUniqueSlice<'a, SocketRef<'a>>);
 
@@ -107,6 +107,31 @@ impl<'a> TryFrom<&'a [SocketRef<'a>]> for SocketSet<'a> {
     #[inline(always)]
     fn try_from(slice: &'a [SocketRef<'a>]) -> Result<Self, Self::Error> {
         SocketSet::new(slice)
+    }
+}
+
+/// A set of [`SocketId`] values that define a 'mask' of outputs that must be resolved.
+/// This is useful if calculating an output value is expensive, and lets a [`Node`] avoid calculating it.
+/// 
+/// This set is created from a slice that is sorted by its [`SocketId`] in ascending order, and contains no duplicate values.
+#[derive(Clone, Copy, Hash)]
+pub struct OutputMask<'a>(SortedUniqueSlice<'a, SocketId>);
+
+impl<'a> OutputMask<'a> {
+    /// Try to create a new [`OutputMask`], checking if the slice is valid.
+    pub fn new(slice: &'a [SocketId]) -> Result<Self, SortedUniqueSliceError> {
+        SortedUniqueSlice::new(slice, |a,b| a.cmp(&b))
+            .map(|v| Self(v))
+    }
+
+    /// Create a new [`OutputMask`] from a slice, without checking that it's valid.
+    pub const unsafe fn new_unchecked(slice: &'a [SocketId]) -> Self {
+        Self(SortedUniqueSlice::new_unchecked(slice))
+    }
+
+    /// Returns `true` if the given [`SocketId`] is **included** by the mask.
+    pub fn includes(&self, id: SocketId) -> bool {
+        self.0.search(|v| v.cmp(&id)).is_some()
     }
 }
 
