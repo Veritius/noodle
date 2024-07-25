@@ -24,7 +24,7 @@ pub trait Node {
     fn execute(&self, values: SocketValues, mask: OutputMask) -> Result<SocketValues, ()>;
 }
 
-/// A reference to a [`Node`] object.
+/// A type-erased reference to a [`Node`] object.
 pub struct NodeRef<'a> {
     inner: &'a dyn Node,
 }
@@ -43,7 +43,7 @@ impl<'a> Deref for NodeRef<'a> {
     }
 }
 
-/// A mutable reference to a [`Node`] object.
+/// A type-erased mutable reference to a [`Node`] object.
 pub struct NodeMut<'a> {
     inner: &'a mut dyn Node,
 }
