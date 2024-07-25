@@ -5,10 +5,11 @@
 
 extern crate alloc;
 
+mod graph;
 mod group;
 mod node;
 mod socket;
-mod graph;
+mod value;
 
 #[cfg(feature="petgraph")]
 mod petgraph;
@@ -16,10 +17,11 @@ mod petgraph;
 #[cfg(feature="daggy")]
 mod daggy;
 
+pub use graph::*;
 pub use group::*;
 pub use node::*;
 pub use socket::*;
-pub use graph::*;
+pub use value::*;
 
 #[cfg(feature="daggy")]
 pub use daggy::*;
