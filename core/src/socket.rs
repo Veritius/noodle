@@ -114,7 +114,7 @@ impl<'a> TryFrom<&'a [SocketRef<'a>]> for SocketSet<'a> {
 /// This is useful if calculating an output value is expensive, and lets a [`Node`] avoid calculating it.
 /// 
 /// This set is created from a slice that is sorted by its [`SocketId`] in ascending order, and contains no duplicate values.
-#[derive(Clone, Copy, Hash)]
+#[derive(Clone, Copy)]
 pub struct OutputMask<'a>(SortedUniqueSlice<'a, SocketId>);
 
 impl<'a> OutputMask<'a> {
@@ -133,6 +133,16 @@ impl<'a> OutputMask<'a> {
     pub fn includes(&self, id: SocketId) -> bool {
         self.0.search(|v| v.cmp(&id)).is_some()
     }
+}
+
+/// A set of [`Value`]
+#[derive(Clone)]
+pub struct SocketValues<'a>(SortedUniqueSlice<'a, SocketValue>);
+
+#[derive(Clone)]
+pub struct SocketValue {
+    pub id: SocketId,
+    pub value: Value,
 }
 
 /// A paired [`NodeId`] and [`SocketId`] for identifying sockets.
@@ -168,9 +178,9 @@ mod sorted {
     //! [`SortedUniqueSlice`] gets its own module so that its internals are not visible.
     //! This allows us to make confident guarantees that it follows its conditions.
 
-    use core::{cmp::Ordering, hash::Hash, ops::Deref};
+    use core::{cmp::Ordering, ops::Deref};
 
-    #[derive(Clone, Copy)]
+    #[derive(Clone, Copy, Hash)]
     pub(super) struct SortedUniqueSlice<'a, T: 'a>(&'a [T]);
 
     impl<'a, T: 'a> SortedUniqueSlice<'a, T> {
@@ -203,12 +213,6 @@ mod sorted {
     
         fn deref(&self) -> &Self::Target {
             &self.0
-        }
-    }
-
-    impl<T> Hash for SortedUniqueSlice<'_, T> where T: Hash {
-        fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
-            self.0.hash(state)
         }
     }
 
