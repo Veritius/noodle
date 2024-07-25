@@ -6,7 +6,7 @@ use std::{any::Any, sync::Arc};
 pub struct Value(ValueInner);
 
 impl Value {
-    /// Attempts to cast the [`Value`] to [`T`]. Fails if the value is not of type `T`.
+    /// Attempts to cast the [`Value`] to `T`. Fails if the value is not of type `T`.
     #[inline(always)]
     pub fn downcast<'a, T: Valuelike>(&'a self) -> Result<&'a T, TypeCastError> {
         self.0.downcast::<T>()

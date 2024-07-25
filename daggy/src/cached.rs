@@ -1,9 +1,11 @@
+use std::collections::HashMap;
 use noodle_core::*;
 use crate::SimpleGraph;
 
 /// A [`SimpleGraph`] that caches node outputs to minimise recalculations.
 pub struct CachedGraph {
     queue: SimpleGraph,
+    cache: HashMap<NodeSocketId, Value>,
 }
 
 impl CachedGraph {
