@@ -64,8 +64,8 @@ impl Graph for VectorGraph {
     }
 
     #[inline]
-    fn node_count(&self) -> usize {
-        self.inner.node_count()
+    fn node_count(&self) -> Option<usize> {
+        Some(self.inner.node_count())
     }
 
     fn insert_link(&mut self, id: LinkId) -> Result<(), WouldCycle> {
@@ -114,12 +114,14 @@ impl Graph for VectorGraph {
     }
 
     #[inline]
-    fn link_count(&self) -> usize {
-        self.inner
+    fn link_count(&self) -> Option<usize> {
+        let v = self.inner
             .graph()
             .edge_weights()
             .map(|edges| edges.len())
-            .sum()
+            .sum();
+
+        return Some(v);
     }
 
     // These don't do anything

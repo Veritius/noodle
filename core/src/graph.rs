@@ -19,7 +19,8 @@ pub trait Graph {
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut>;
 
     /// Returns the number of nodes the graph contains.
-    fn node_count(&self) -> usize;
+    /// Returns `None` if an estimate cannot be obtained.
+    fn node_count(&self) -> Option<usize>;
 
     /// Reserve space for at least `amt` nodes.
     /// Does nothing if capacity is already sufficient.
@@ -42,7 +43,8 @@ pub trait Graph {
     fn has_link(&self, id: LinkId) -> bool;
 
     /// Returns the number of links the graph contains.
-    fn link_count(&self) -> usize;
+    /// Returns `None` if an estimate cannot be obtained.
+    fn link_count(&self) -> Option<usize>;
 
     /// Reserve space for at least `amt` nodes.
     /// Does nothing if capacity is already sufficient.
@@ -61,6 +63,12 @@ pub trait Graph {
         node: NodeId,
         outputs: OutputMask,
     ) -> Result<SocketValues, ()>;
+}
+
+/// A [`Graph`] that stores an internal cache.
+pub trait CachingGraph: Graph {
+    /// Clear any cached output of a [`Node`] and any of its children.
+    fn clear_cached_output(&mut self, node: NodeId);
 }
 
 /// A [`Graph`] with an **unsafe** API for advanced usage.
