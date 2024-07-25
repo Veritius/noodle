@@ -1,77 +1,88 @@
-use std::collections::HashMap;
 use noodle_core::*;
 use crate::SimpleGraph;
 
 /// A [`SimpleGraph`] that caches node outputs to minimise recalculations.
 pub struct CachedGraph {
-    queue: SimpleGraph,
-    cache: HashMap<NodeSocketId, Value>,
+    graph: SimpleGraph,
 }
 
 impl CachedGraph {
     /// Creates a new [`CachedGraph`].
     pub fn new() -> Self {
         Self {
-            queue: SimpleGraph::new(),
+            graph: SimpleGraph::new(),
         }
     }
 }
 
 impl Graph for CachedGraph {
+    #[inline]
     fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
-        todo!()
+        self.graph.insert_node(node)
     }
 
     fn remove_node(&mut self, id: NodeId) -> Option<Box<dyn Node>> {
-        todo!()
+        self.graph.remove_node(id)
     }
 
+    #[inline]
     fn has_node(&self, id: NodeId) -> bool {
-        todo!()
+        self.graph.has_node(id)
     }
 
+    #[inline]
     fn get_node(&self, id: NodeId) -> Option<NodeRef> {
-        todo!()
+        self.graph.get_node(id)
     }
 
+    #[inline]
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut> {
-        todo!()
+        self.graph.get_node_mut(id)
     }
 
+    #[inline]
     fn node_count(&self) -> Option<usize> {
-        todo!()
+        self.graph.node_count()
     }
 
+    #[inline]
     fn reserve_nodes(&mut self, amt: usize) {
-        todo!()
+        self.graph.reserve_nodes(amt)
     }
 
+    #[inline]
     fn reserve_nodes_exact(&mut self, amt: usize) {
-        todo!()
+        self.graph.reserve_nodes_exact(amt)
     }
 
+    #[inline]
     fn insert_link(&mut self, id: LinkId) -> Result<(), WouldCycle> {
-        todo!()
+        self.graph.insert_link(id)
     }
 
+    #[inline]
     fn remove_link(&mut self, id: LinkId) {
-        todo!()
+        self.graph.remove_link(id)
     }
 
+    #[inline]
     fn has_link(&self, id: LinkId) -> bool {
-        todo!()
+        self.graph.has_link(id)
     }
 
+    #[inline]
     fn link_count(&self) -> Option<usize> {
-        todo!()
+        self.graph.link_count()
     }
 
+    #[inline]
     fn reserve_links(&mut self, amt: usize) {
-        todo!()
+        self.graph.reserve_links(amt)
     }
 
+    #[inline]
     fn reserve_links_exact(&mut self, amt: usize) {
-        todo!()
+        self.graph.reserve_links_exact(amt)
     }
 
     fn solve_node(
