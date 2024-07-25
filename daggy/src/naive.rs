@@ -1,17 +1,17 @@
-use crate::*;
-use ::daggy;
+use noodle_core::*;
 use daggy::{stable_dag::StableDag, EdgeIndex};
 use smallvec::SmallVec;
+use crate::id::NodeIdWrap;
 
-type GraphInner = StableDag<Box<dyn Node>, VectorGraphEdges, NodeId>;
+type GraphInner = StableDag<Box<dyn Node>, VectorGraphEdges, NodeIdWrap>;
 
 /// A [`Graph`] implementation based on `daggy`'s [`StableDag`] type.
-pub struct VectorGraph {
+pub struct UncachedGraph {
     inner: GraphInner,
 }
 
 // public interface
-impl VectorGraph {
+impl UncachedGraph {
     /// Creates a new, empty [`VectorGraph`].
     pub fn new() -> Self {
         Self {
@@ -21,9 +21,9 @@ impl VectorGraph {
 }
 
 // internal stuff
-impl VectorGraph {
+impl UncachedGraph {
     fn edge_idx(&self, id: LinkId) -> Option<EdgeIndex<NodeId>> {
-        self.inner.find_edge(id.from.node.into(), id.to.node.into())
+        self.inner.find_edge(id.from.node, id.to.node).map(|v| todo!())
     }
 
     fn edge_weight(&self, id: LinkId) -> Option<(EdgeIndex<NodeId>, &VectorGraphEdges)> {
@@ -38,7 +38,7 @@ impl VectorGraph {
 }
 
 // graph trait impl
-impl Graph for VectorGraph {
+impl Graph for UncachedGraph {
     fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
         NodeId(self.inner.add_node(node.into()).index() as u32)
     }
