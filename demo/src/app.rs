@@ -1,6 +1,6 @@
 use eframe::egui;
 use egui::Widget;
-use noodle_daggy::UncachedGraph;
+use noodle_daggy::CachedGraph;
 use noodle_egui::graphview::GraphViewBuilder;
 use crate::settings::AppSettings;
 
@@ -8,7 +8,7 @@ pub(super) struct DemoApp {
     pub settings: AppSettings,
     show_settings: bool,
 
-    pub graph: UncachedGraph,
+    pub graph: CachedGraph,
 }
 
 impl eframe::App for DemoApp {
@@ -44,7 +44,7 @@ impl Default for DemoApp {
             settings: AppSettings::default(),
             show_settings: false,
 
-            graph: UncachedGraph::new(),
+            graph: CachedGraph::new(),
         }
     }
 }
