@@ -135,14 +135,54 @@ impl<'a> OutputMask<'a> {
     }
 }
 
-/// A set of [`Value`]
+/// A set of [`Value`] items associated with [`SocketId`] values.
 #[derive(Clone)]
 pub struct SocketValues<'a>(SortedUniqueSlice<'a, SocketValue>);
 
+impl<'a> SocketValues<'a> {
+    /// Try to create a new [`SocketValues`] set, checking if the slice is valid.
+    pub fn new(slice: &'a [SocketValue]) -> Result<Self, SortedUniqueSliceError> {
+        SortedUniqueSlice::new(slice, |a,b| a.cmp(b))
+            .map(|v| Self(v))
+    }
+
+    /// Gets the [`Value`] for a given [`SocketId`], if present in the set.
+    pub fn get(&self, id: SocketId) -> Option<Value> {
+        self.0.search(|v| v.id.cmp(&id)).map(|v| v.value.clone())
+    }
+}
+
+/// A [`Value`] associated with a [`SocketId`], used to pass values between nodes.
+/// 
+/// `SocketValue` implements [`PartialEq`], [`Eq`], [`PartialOrd`], and [`Ord`] according to its associated `SocketId`.
 #[derive(Clone)]
 pub struct SocketValue {
+    /// The ID of the socket.
     pub id: SocketId,
+
+    /// The value of the socket.
     pub value: Value,
+}
+
+impl PartialEq for SocketValue {
+    fn eq(&self, other: &Self) -> bool {
+        self.id.eq(&other.id)
+    }
+}
+
+impl Eq for SocketValue {}
+
+impl PartialOrd for SocketValue {
+    #[inline(always)]
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for SocketValue {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.id.cmp(&other.id)
+    }
 }
 
 /// A paired [`NodeId`] and [`SocketId`] for identifying sockets.
