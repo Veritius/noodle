@@ -14,13 +14,11 @@ pub trait Node {
     /// To identify an instance of a node, use [`NodeId`].
     fn discriminator(&self) -> &str;
 
-    /// Returns an iterator over the output sockets of the node.
-    /// This does not include any values, cached or otherwise.
-    fn iter_inputs(&self) -> SocketIter;
+    /// Returns the sockets used for input values.
+    fn input_sockets(&self) -> SocketSet;
 
-    /// Returns an iterator over the output sockets of the node.
-    /// This does not include any values, cached or otherwise.
-    fn iter_outputs(&self) -> SocketIter;
+    /// Returns the sockets used for output values.
+    fn output_sockets(&self) -> SocketSet;
 }
 
 /// A reference to a [`Node`] object.

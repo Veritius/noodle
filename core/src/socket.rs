@@ -1,5 +1,5 @@
 use core::marker::PhantomData;
-use alloc::boxed::Box;
+use std::any::TypeId;
 use super::*;
 
 /// An ID for a socket belonging to one side of a [`Node`].
@@ -10,7 +10,7 @@ use super::*;
 pub struct SocketId(pub u16);
 
 /// The shape of the socket.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum SocketShape {
     /// The socket cannot have any input.
     Disabled,
@@ -61,34 +61,53 @@ impl SocketShape {
 }
 
 /// A socket controlled by a [`Node`](crate::Node).
-pub struct Socket<'a> {
+#[derive(Debug, Clone, Copy, Hash)]
+pub struct SocketRef<'a> {
     /// The ID of the socket.
     pub id: SocketId,
 
     /// The shape of the socket.
     pub shape: SocketShape,
 
+    /// The data type the socket accepts.
+    pub vtype: TypeId,
+
     #[doc(hidden)]
     pub phantom: PhantomData<&'a ()>,
 }
 
-/// An iterator over a set of [`Socket`] handles.
-pub struct SocketIter<'a> {
-    iter: Box<dyn Iterator<Item = Socket<'a>> + 'a>,
-}
+/// A set of sockets.
+/// 
+/// A `SocketSet` must be ordered by its `id` in ascending order and have no duplicate items.
+#[derive(Clone, Copy, Hash)]
+pub struct SocketSet<'a>(&'a [SocketRef<'a>]);
 
-impl<'a> Iterator for SocketIter<'a> {
-    type Item = Socket<'a>;
+impl<'a> SocketSet<'a> {
+    /// Try to create a new [`SocketSet`], checking if the slice is valid.
+    pub fn new(slice: &'a [SocketRef<'a>]) -> Result<Self, InvalidSocketSet> {
+        // Simultaneously checks that the set is both in order and has no duplicates
+        if !slice.windows(2).all(|w| w[0].id < w[1].id) { return Err(InvalidSocketSet); }
+        return Ok(unsafe { Self::new_unchecked(slice) });
+    }
 
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        self.iter.next()
+    /// Create a new [`SocketSet`] from a slice, without checking that it's valid.
+    pub const unsafe fn new_unchecked(slice: &'a [SocketRef<'a>]) -> Self {
+        Self(slice)
+    }
+
+    /// Gets the [`SocketRef`] for a given [`SocketId`], if present in the set.
+    pub fn get(&self, id: SocketId) -> Option<SocketRef> {
+        let idx = self.0.binary_search_by(|v| v.id.cmp(&id)).ok()?;
+        return Some(self.0[idx]);
     }
 }
 
-impl<'a> From<Box<dyn Iterator<Item = Socket<'a>> + 'a>> for SocketIter<'a> {
-    fn from(value: Box<dyn Iterator<Item = Socket<'a>> + 'a>) -> Self {
-        Self { iter: value }
+impl<'a> TryFrom<&'a [SocketRef<'a>]> for SocketSet<'a> {
+    type Error = InvalidSocketSet;
+
+    #[inline(always)]
+    fn try_from(slice: &'a [SocketRef<'a>]) -> Result<Self, Self::Error> {
+        SocketSet::new(slice)
     }
 }
 
@@ -123,3 +142,7 @@ impl core::fmt::Display for WouldCycle {
 
 #[cfg(feature="std")]
 impl std::error::Error for WouldCycle {}
+
+/// Error returned when the slice used to create a [`SocketSet`] did not satisfy the conditions.
+#[derive(Debug, Clone, Copy)]
+pub struct InvalidSocketSet;
