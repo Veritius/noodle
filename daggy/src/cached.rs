@@ -20,7 +20,6 @@ impl CachedGraph {
 }
 
 impl Graph for CachedGraph {
-    
     fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
         let node = Box::new(CachedGraphNode {
             ptr: node.into(),
