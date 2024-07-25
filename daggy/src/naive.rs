@@ -1,7 +1,7 @@
 use noodle_core::*;
 use daggy::{stable_dag::StableDag, EdgeIndex};
 use smallvec::SmallVec;
-use crate::id::NodeIdWrap;
+use crate::id::{node_id_to_node_index, node_index_to_node_id, NodeIdWrap};
 
 type GraphInner = StableDag<Box<dyn Node>, VectorGraphEdges, NodeIdWrap>;
 
@@ -22,16 +22,19 @@ impl UncachedGraph {
 
 // internal stuff
 impl UncachedGraph {
-    fn edge_idx(&self, id: LinkId) -> Option<EdgeIndex<NodeId>> {
-        self.inner.find_edge(id.from.node, id.to.node).map(|v| todo!())
+    fn edge_idx(&self, id: LinkId) -> Option<EdgeIndex<NodeIdWrap>> {
+        self.inner.find_edge(
+            node_id_to_node_index(id.from.node),
+            node_id_to_node_index(id.to.node)
+        )
     }
 
-    fn edge_weight(&self, id: LinkId) -> Option<(EdgeIndex<NodeId>, &VectorGraphEdges)> {
+    fn edge_weight(&self, id: LinkId) -> Option<(EdgeIndex<NodeIdWrap>, &VectorGraphEdges)> {
         let id = self.edge_idx(id)?;
         return Some((id, self.inner.edge_weight(id)?));
     }
 
-    fn edge_weight_mut(&mut self, id: LinkId) -> Option<(EdgeIndex<NodeId>, &mut VectorGraphEdges)> {
+    fn edge_weight_mut(&mut self, id: LinkId) -> Option<(EdgeIndex<NodeIdWrap>, &mut VectorGraphEdges)> {
         let id = self.edge_idx(id)?;
         return Some((id, self.inner.edge_weight_mut(id)?));
     }
@@ -45,21 +48,21 @@ impl Graph for UncachedGraph {
 
     #[inline]
     fn remove_node(&mut self, id: NodeId) -> Option<Box<dyn Node>> {
-        self.inner.remove_node(id.into())
+        self.inner.remove_node(node_id_to_node_index(id))
     }
 
     #[inline]
     fn has_node(&self, id: NodeId) -> bool {
-        self.inner.contains_node(id.into())
+        self.inner.contains_node(node_id_to_node_index(id))
     }
 
     fn get_node(&self, id: NodeId) -> Option<NodeRef> {
-        self.inner.node_weight(id.into())
+        self.inner.node_weight(node_id_to_node_index(id))
             .map(|v| NodeRef::from(&**v))
     }
 
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut> {
-        self.inner.node_weight_mut(id.into())
+        self.inner.node_weight_mut(node_id_to_node_index(id))
             .map(move |v| NodeMut::from(v))
     }
 
@@ -80,10 +83,10 @@ impl Graph for UncachedGraph {
 
             // Edge doesn't exist, add it
             None => self.inner.add_edge(
-                id.from.node.into(),
-                id.to.node.into(),
+                node_id_to_node_index(id.from.node),
+                node_id_to_node_index(id.to.node),
                 VectorGraphEdges::single(pair),
-            ).map(|_| ()).map_err(|e| e.into()),
+            ).map(|_| ()).map_err(|_| WouldCycle),
         }
     }
 
@@ -136,13 +139,6 @@ impl Graph for UncachedGraph {
         outputs: OutputMask,
     ) -> Result<SocketValues, ()> {
         todo!()
-    }
-}
-
-impl<E> From<daggy::WouldCycle<E>> for WouldCycle {
-    #[inline]
-    fn from(_value: daggy::WouldCycle<E>) -> Self {
-        WouldCycle
     }
 }
 

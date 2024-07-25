@@ -36,3 +36,20 @@ impl From<NodeId> for NodeIdWrap {
         Self(value)
     }
 }
+
+impl From<NodeIdWrap> for NodeId {
+    #[inline(always)]
+    fn from(value: NodeIdWrap) -> Self {
+        value.0
+    }
+}
+
+#[inline]
+pub(crate) fn node_index_to_node_id(index: NodeIndex<NodeIdWrap>) -> NodeId {
+    NodeIdWrap::from(index).into()
+}
+
+#[inline]
+pub(crate) fn node_id_to_node_index(id: NodeId) -> NodeIndex<NodeIdWrap> {
+    NodeIndex::from(NodeIdWrap::from(id))
+}
