@@ -54,6 +54,13 @@ pub trait Graph {
     /// Unlike [`reserve_nodes`](Self::reserve_nodes), this will not
     /// deliberately over-allocate to speculatively avoid frequent allocations.
     fn reserve_links_exact(&mut self, amt: usize);
+
+    /// Solve for the output of `node` with the given [`OutputMask`].
+    fn solve_node(
+        &mut self,
+        node: NodeId,
+        outputs: OutputMask,
+    ) -> Result<SocketValues, ()>;
 }
 
 /// A [`Graph`] with an **unsafe** API for advanced usage.

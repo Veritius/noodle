@@ -127,6 +127,14 @@ impl Graph for VectorGraph {
     fn reserve_nodes_exact(&mut self, _amt: usize) {}
     fn reserve_links(&mut self, _amt: usize) {}
     fn reserve_links_exact(&mut self, _amt: usize) {}
+
+    fn solve_node(
+        &mut self,
+        node: NodeId,
+        outputs: OutputMask,
+    ) -> Result<SocketValues, ()> {
+        todo!()
+    }
 }
 
 impl<E> From<daggy::WouldCycle<E>> for WouldCycle {
