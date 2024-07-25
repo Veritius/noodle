@@ -45,6 +45,11 @@ impl From<NodeIdWrap> for NodeId {
 }
 
 #[inline]
+pub(crate) fn node_index_to_node_id(index: NodeIndex<NodeIdWrap>) -> NodeId {
+    NodeId::from(NodeIdWrap::from(index))
+}
+
+#[inline]
 pub(crate) fn node_id_to_node_index(id: NodeId) -> NodeIndex<NodeIdWrap> {
     NodeIndex::from(NodeIdWrap::from(id))
 }

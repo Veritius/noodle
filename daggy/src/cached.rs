@@ -1,88 +1,98 @@
+use daggy::stable_dag::StableDag;
 use noodle_core::*;
-use crate::SimpleGraph;
+use smallvec::SmallVec;
+use crate::{edges::VectorGraphEdges, id::{node_id_to_node_index, node_index_to_node_id, NodeIdWrap}, SimpleGraph};
+
+type GraphInner = StableDag<Box<CachedGraphNode>, VectorGraphEdges, NodeIdWrap>;
 
 /// A [`SimpleGraph`] that caches node outputs to minimise recalculations.
 pub struct CachedGraph {
-    graph: SimpleGraph,
+    inner: GraphInner,
 }
 
 impl CachedGraph {
     /// Creates a new [`CachedGraph`].
     pub fn new() -> Self {
         Self {
-            graph: SimpleGraph::new(),
+            inner: GraphInner::new(),
         }
     }
 }
 
 impl Graph for CachedGraph {
-    #[inline]
+    
     fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
-        self.graph.insert_node(node)
+        let node = Box::new(CachedGraphNode {
+            ptr: node.into(),
+            cached: SmallVec::new(),
+        });
+
+        node_index_to_node_id(self.inner.add_node(node))
     }
 
     fn remove_node(&mut self, id: NodeId) -> Option<Box<dyn Node>> {
-        self.graph.remove_node(id)
+        todo!()
+
+        // self.inner.remove_node(node_id_to_node_index(id))
+        //     .map(|node| node.ptr)
     }
 
-    #[inline]
+    
     fn has_node(&self, id: NodeId) -> bool {
-        self.graph.has_node(id)
+        todo!()
     }
 
-    #[inline]
+    
     fn get_node(&self, id: NodeId) -> Option<NodeRef> {
-        self.graph.get_node(id)
+        todo!()
     }
 
-    #[inline]
+    
     fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut> {
-        self.graph.get_node_mut(id)
+        todo!()
     }
 
-    #[inline]
+    
     fn node_count(&self) -> Option<usize> {
-        self.graph.node_count()
+        todo!()
     }
 
-    #[inline]
+    
     fn reserve_nodes(&mut self, amt: usize) {
-        self.graph.reserve_nodes(amt)
+        todo!()
     }
 
-    #[inline]
+    
     fn reserve_nodes_exact(&mut self, amt: usize) {
-        self.graph.reserve_nodes_exact(amt)
+        todo!()
     }
 
-    #[inline]
+    
     fn insert_link(&mut self, id: LinkId) -> Result<(), WouldCycle> {
-        self.graph.insert_link(id)
+        todo!()
     }
 
-    #[inline]
+    
     fn remove_link(&mut self, id: LinkId) {
-        self.graph.remove_link(id)
+        todo!()
     }
 
-    #[inline]
+    
     fn has_link(&self, id: LinkId) -> bool {
-        self.graph.has_link(id)
+        todo!()
     }
 
-    #[inline]
+    
     fn link_count(&self) -> Option<usize> {
-        self.graph.link_count()
+        todo!()
     }
 
-    #[inline]
     fn reserve_links(&mut self, amt: usize) {
-        self.graph.reserve_links(amt)
+        todo!()
     }
 
-    #[inline]
     fn reserve_links_exact(&mut self, amt: usize) {
-        self.graph.reserve_links_exact(amt)
+        todo!()
     }
 
     fn solve_node(
@@ -98,4 +108,9 @@ impl CachingGraph for CachedGraph {
     fn clear_cached_output(&mut self, node: NodeId) {
         todo!()
     }
+}
+
+struct CachedGraphNode {
+    ptr: Box<dyn Node>,
+    cached: SmallVec<[SocketValue; 1]>,
 }
