@@ -1,7 +1,7 @@
 use noodle_core::*;
 use daggy::{stable_dag::StableDag, EdgeIndex};
 use smallvec::SmallVec;
-use crate::id::{node_id_to_node_index, node_index_to_node_id, NodeIdWrap};
+use crate::id::{node_id_to_node_index, NodeIdWrap};
 
 type GraphInner = StableDag<Box<dyn Node>, VectorGraphEdges, NodeIdWrap>;
 
