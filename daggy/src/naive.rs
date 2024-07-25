@@ -6,13 +6,13 @@ use crate::id::{node_id_to_node_index, NodeIdWrap};
 type GraphInner = StableDag<Box<dyn Node>, VectorGraphEdges, NodeIdWrap>;
 
 /// A [`Graph`] implementation based on `daggy`'s [`StableDag`] type.
-pub struct UncachedGraph {
+pub struct SimpleGraph {
     inner: GraphInner,
 }
 
 // public interface
-impl UncachedGraph {
-    /// Creates a new, empty [`VectorGraph`].
+impl SimpleGraph {
+    /// Creates a new, empty [`UncachedGraph`].
     pub fn new() -> Self {
         Self {
             inner: GraphInner::new(),
@@ -21,7 +21,7 @@ impl UncachedGraph {
 }
 
 // internal stuff
-impl UncachedGraph {
+impl SimpleGraph {
     fn edge_idx(&self, id: LinkId) -> Option<EdgeIndex<NodeIdWrap>> {
         self.inner.find_edge(
             node_id_to_node_index(id.from.node),
@@ -41,7 +41,7 @@ impl UncachedGraph {
 }
 
 // graph trait impl
-impl Graph for UncachedGraph {
+impl Graph for SimpleGraph {
     fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
         NodeId(self.inner.add_node(node.into()).index() as u32)
     }

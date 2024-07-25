@@ -1,14 +1,16 @@
 use noodle_core::*;
-use crate::UncachedGraph;
+use crate::SimpleGraph;
 
+/// A [`SimpleGraph`] that caches node outputs to minimise recalculations.
 pub struct CachedGraph {
-    queue: UncachedGraph,
+    queue: SimpleGraph,
 }
 
 impl CachedGraph {
+    /// Creates a new [`CachedGraph`].
     pub fn new() -> Self {
         Self {
-            queue: UncachedGraph::new(),
+            queue: SimpleGraph::new(),
         }
     }
 }
