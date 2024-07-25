@@ -1,7 +1,6 @@
 use noodle_core::*;
 use daggy::{stable_dag::StableDag, EdgeIndex};
-use smallvec::SmallVec;
-use crate::id::{node_id_to_node_index, NodeIdWrap};
+use crate::{edges::VectorGraphEdges, id::{node_id_to_node_index, NodeIdWrap}};
 
 type GraphInner = StableDag<Box<dyn Node>, VectorGraphEdges, NodeIdWrap>;
 
@@ -139,56 +138,5 @@ impl Graph for SimpleGraph {
         outputs: OutputMask,
     ) -> Result<SocketValues, ()> {
         todo!()
-    }
-}
-
-struct VectorGraphEdges {
-    edges: SmallVec<[[SocketId; 2]; 4]>,
-}
-
-impl VectorGraphEdges {
-    fn new() -> Self {
-        Self {
-            edges: SmallVec::new(),
-        }
-    }
-
-    fn single(value: [SocketId; 2]) -> Self {
-        let mut val = VectorGraphEdges::new();
-        val.edges.push(value);
-
-        return val;
-    }
-
-    // returns true if the link existed
-    fn insert(&mut self, sockets: [SocketId; 2]) -> bool {
-        match self.edges.binary_search(&sockets) {
-            Ok(_) => return true,
-            Err(index) => {
-                self.edges.insert(index, sockets);
-                return false;
-            },
-        }
-    }
-
-    // returns true if the link existed
-    fn remove(&mut self, sockets: &[SocketId; 2]) -> bool {
-        match self.edges.binary_search(sockets) {
-            Ok(index) => {
-                self.edges.remove(index);
-                return true;
-            }
-            Err(_) => return false,
-        }
-    }
-
-    // returns true if the link exists
-    fn contains(&self, sockets: &[SocketId; 2]) -> bool {
-        self.edges.binary_search(sockets).is_ok()
-    }
-
-    #[inline]
-    fn len(&self) -> usize {
-        self.edges.len()
     }
 }

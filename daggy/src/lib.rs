@@ -3,6 +3,7 @@
 #![warn(missing_docs)]
 
 mod cached;
+mod edges;
 mod id;
 mod naive;
 
