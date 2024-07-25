@@ -19,6 +19,9 @@ pub trait Node {
 
     /// Returns the sockets used for output values.
     fn output_sockets(&self) -> SocketSet;
+
+    /// 'Executes' the node, returning the output if successful.
+    fn execute(&self, values: SocketValues, mask: OutputMask) -> Result<SocketValues, ()>;
 }
 
 /// A reference to a [`Node`] object.
@@ -75,13 +78,4 @@ impl<'a> From<NodeMut<'a>> for NodeRef<'a> {
     fn from(value: NodeMut<'a>) -> Self {
         Self { inner: value.inner }
     }
-}
-
-/// A type that can produce new [`Node`] objects.
-pub trait NodeFactory {
-    /// The [discriminator](Node::discriminator) of the resulting [`Node`].
-    fn discriminator(&self) -> &str;
-
-    /// Creates a new node.
-    fn new(&self) -> Box<dyn Node>;
 }
