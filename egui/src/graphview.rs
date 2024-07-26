@@ -1,15 +1,18 @@
 //! Widgets for displaying [`Graph`] objects.
 
+use std::marker::PhantomData;
+
 use egui::{Color32, Direction, LayerId, Rect, Response, Rounding, Sense, Vec2, Widget};
-use noodle_core::Graph;
+use noodle_core::*;
 
 /// A builder for a graph view.
 /// 
 /// Can be constructed from the following types:
 /// - `&G` where `G: Graph` - read-only graph view
 /// - `&mut G` where `G: Graph` - editable graph view
-pub struct GraphViewBuilder<G> {
+pub struct GraphViewBuilder<G, N> {
     graph: G,
+    ph: PhantomData<N>,
 
     max_size: Vec2,
     rounding: Rounding,
@@ -23,10 +26,11 @@ pub struct GraphViewBuilder<G> {
     max_zoom: f32,
 }
 
-impl<G> GraphViewBuilder<G> {
+impl<G, N> GraphViewBuilder<G, N> {
     fn new_inner(graph: G) -> Self {
         Self {
             graph,
+            ph: PhantomData,
 
             max_size: Vec2::INFINITY,
             rounding: Rounding::same(5.0),
@@ -42,21 +46,21 @@ impl<G> GraphViewBuilder<G> {
     }
 }
 
-impl<'a, G: Graph> GraphViewBuilder<&'a G> {
+impl<'a, G, N> GraphViewBuilder<&'a G, N> {
     /// Creates a new, read-only [`GraphViewBuilder`].
     pub fn new(graph: &'a G) -> Self {
         Self::new_inner(graph)
     }
 }
 
-impl<'a, G: Graph> GraphViewBuilder<&'a mut G> {
+impl<'a, G, N> GraphViewBuilder<&'a mut G, N> {
     /// Creates a new, editable [`GraphViewBuilder`].
     pub fn new(graph: &'a mut G) -> Self {
         Self::new_inner(graph)
     }
 }
 
-impl<G> GraphViewBuilder<G> {
+impl<G, N> GraphViewBuilder<G, N> {
     /// Sets the maximum width of the outer frame of the graph view.
     /// 
     /// Use `f32::INFINITY` if you want the graph view to fit the surrounding area.
@@ -135,7 +139,7 @@ impl<G> GraphViewBuilder<G> {
     }
 }
 
-impl<'a, G: Graph> Widget for GraphViewBuilder<&'a G> {
+impl<'a, G: Graph<N>, N: Node> Widget for GraphViewBuilder<&'a G, N> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         let (rect, bg_response) = layout_view_rect(ui, self.max_size);
         let painter = ui.painter().clone()
@@ -148,7 +152,7 @@ impl<'a, G: Graph> Widget for GraphViewBuilder<&'a G> {
     }
 }
 
-impl<'a, G: Graph> Widget for GraphViewBuilder<&'a mut G> {
+impl<'a, G: Graph<N>, N: Node> Widget for GraphViewBuilder<&'a mut G, N> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         todo!()
     }

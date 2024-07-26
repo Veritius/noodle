@@ -8,7 +8,7 @@ pub(super) struct DemoApp {
     pub settings: AppSettings,
     show_settings: bool,
 
-    pub graph: CachedGraph,
+    // pub graph: CachedGraph<()>,
 }
 
 impl eframe::App for DemoApp {
@@ -31,9 +31,9 @@ impl eframe::App for DemoApp {
         }
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            GraphViewBuilder::<&_>::new(&self.graph)
-                .direction(self.settings.graph_direction)
-                .ui(ui)
+            // GraphViewBuilder::<&_>::new(&self.graph)
+            //     .direction(self.settings.graph_direction)
+            //     .ui(ui)
         });
     }
 }
@@ -44,7 +44,7 @@ impl Default for DemoApp {
             settings: AppSettings::default(),
             show_settings: false,
 
-            graph: CachedGraph::new(),
+            // graph: CachedGraph::new(),
         }
     }
 }

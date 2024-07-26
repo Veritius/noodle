@@ -1,22 +1,21 @@
-use alloc::boxed::Box;
 use super::*;
 
 /// A directed acyclic graph structure.
-pub trait Graph {
+pub trait Graph<N: Node> {
     /// Add a node to the graph.
-    fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId;
+    fn insert_node(&mut self, node: impl Into<N>) -> NodeId;
 
     /// Remove a node from the graph, breaking any links.
-    fn remove_node(&mut self, id: NodeId) -> Option<Box<dyn Node>>;
+    fn remove_node(&mut self, id: NodeId) -> Option<N>;
 
     /// Check if the node is present.
     fn has_node(&self, id: NodeId) -> bool;
 
     /// Immutably access a node by its ID.
-    fn get_node(&self, id: NodeId) -> Option<NodeRef>;
+    fn get_node(&self, id: NodeId) -> Option<NodeRef<N>>;
 
     /// Mutably access a node by its ID.
-    fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut>;
+    fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut<N>>;
 
     /// Returns the number of nodes the graph contains.
     /// Returns `None` if an estimate cannot be obtained.
@@ -66,7 +65,11 @@ pub trait Graph {
 }
 
 /// A [`Graph`] that stores an internal cache.
-pub trait CachingGraph: Graph {
+pub trait CachingGraph<N>
+where
+    Self: Graph<N>,
+    N: Node,
+{
     /// Clear any cached output of a [`Node`] and any of its children.
     fn clear_cached_output(&mut self, node: NodeId);
 }

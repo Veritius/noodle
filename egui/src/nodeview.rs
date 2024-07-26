@@ -26,18 +26,18 @@ impl<'a, N> NodeViewBuilder<'a, N> {
     }
 }
 
-impl<'a> NodeViewBuilder<'a, NodeRef<'a>> {
+impl<'a, N: Node> NodeViewBuilder<'a, NodeRef<'a, N>> {
     /// Creates a new [`NodeViewBuilder`].
     #[inline]
-    pub fn new(node_ref: NodeRef<'a>) -> Self {
+    pub fn new(node_ref: NodeRef<'a, N>) -> Self {
         Self::new_inner(node_ref)
     }
 }
 
-impl<'a> NodeViewBuilder<'a, NodeMut<'a>> {
+impl<'a, N: Node> NodeViewBuilder<'a, NodeMut<'a, N>> {
     /// Creates a new [`NodeViewBuilder`].
     #[inline]
-    pub fn new(node_mut: NodeMut<'a>) -> Self {
+    pub fn new(node_mut: NodeMut<'a, N>) -> Self {
         Self::new_inner(node_mut)
     }
 }
@@ -69,13 +69,13 @@ impl<'a, N> NodeViewBuilder<'a, N> {
     }
 }
 
-impl<'a> Widget for NodeViewBuilder<'a, NodeRef<'a>> {
+impl<'a, N: Node> Widget for NodeViewBuilder<'a, NodeRef<'a, N>> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         todo!()
     }
 }
 
-impl<'a> Widget for NodeViewBuilder<'a, NodeMut<'a>> {
+impl<'a, N: Node> Widget for NodeViewBuilder<'a, NodeMut<'a, N>> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         todo!()
     }

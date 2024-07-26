@@ -2,15 +2,15 @@ use noodle_core::*;
 use daggy::{stable_dag::StableDag, EdgeIndex};
 use crate::{edges::VectorGraphEdges, id::{node_id_to_node_index, NodeIdWrap}};
 
-type GraphInner = StableDag<Box<dyn Node>, VectorGraphEdges, NodeIdWrap>;
+type GraphInner<N: Node> = StableDag<N, VectorGraphEdges, NodeIdWrap>;
 
 /// A [`Graph`] implementation based on `daggy`'s [`StableDag`] type.
-pub struct SimpleGraph {
-    inner: GraphInner,
+pub struct SimpleGraph<N: Node> {
+    inner: GraphInner<N>,
 }
 
 // public interface
-impl SimpleGraph {
+impl<N: Node> SimpleGraph<N> {
     /// Creates a new, empty [`UncachedGraph`].
     pub fn new() -> Self {
         Self {
@@ -20,7 +20,7 @@ impl SimpleGraph {
 }
 
 // internal stuff
-impl SimpleGraph {
+impl<N: Node> SimpleGraph<N> {
     fn edge_idx(&self, id: LinkId) -> Option<EdgeIndex<NodeIdWrap>> {
         self.inner.find_edge(
             node_id_to_node_index(id.from.node),
@@ -40,13 +40,13 @@ impl SimpleGraph {
 }
 
 // graph trait impl
-impl Graph for SimpleGraph {
-    fn insert_node(&mut self, node: impl Into<Box<dyn Node>>) -> NodeId {
+impl<N: Node> Graph<N> for SimpleGraph<N> {
+    fn insert_node(&mut self, node: impl Into<N>) -> NodeId {
         NodeId(self.inner.add_node(node.into()).index() as u32)
     }
 
     #[inline]
-    fn remove_node(&mut self, id: NodeId) -> Option<Box<dyn Node>> {
+    fn remove_node(&mut self, id: NodeId) -> Option<N> {
         self.inner.remove_node(node_id_to_node_index(id))
     }
 
@@ -55,12 +55,12 @@ impl Graph for SimpleGraph {
         self.inner.contains_node(node_id_to_node_index(id))
     }
 
-    fn get_node(&self, id: NodeId) -> Option<NodeRef> {
+    fn get_node(&self, id: NodeId) -> Option<NodeRef<N>> {
         self.inner.node_weight(node_id_to_node_index(id))
-            .map(|v| NodeRef::from(&**v))
+            .map(|v| NodeRef::from(&*v))
     }
 
-    fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut> {
+    fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut<N>> {
         self.inner.node_weight_mut(node_id_to_node_index(id))
             .map(move |v| NodeMut::from(v))
     }

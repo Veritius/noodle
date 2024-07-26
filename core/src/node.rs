@@ -24,58 +24,52 @@ pub trait Node {
     fn execute(&self, values: SocketValues, mask: OutputMask) -> Result<SocketValues, ()>;
 }
 
-/// A type-erased reference to a [`Node`] object.
-pub struct NodeRef<'a> {
-    inner: &'a dyn Node,
+/// A reference to a [`Node`] object.
+pub struct NodeRef<'a, N: Node + 'a> {
+    inner: &'a N,
 }
 
-impl<'a> From<&'a dyn Node> for NodeRef<'a> {
-    fn from(value: &'a dyn Node) -> NodeRef<'a> {
+impl<'a, N: Node> From<&'a N> for NodeRef<'a, N> {
+    fn from(value: &'a N) -> NodeRef<'a, N> {
         Self { inner: value }
     }
 }
 
-impl<'a> Deref for NodeRef<'a> {
-    type Target = dyn Node + 'a;
+impl<'a, N: Node + 'a> Deref for NodeRef<'a, N> {
+    type Target = N;
 
     fn deref(&self) -> &Self::Target {
         self.inner
     }
 }
 
-/// A type-erased mutable reference to a [`Node`] object.
-pub struct NodeMut<'a> {
-    inner: &'a mut dyn Node,
+/// A mutable reference to a [`Node`] object.
+pub struct NodeMut<'a, N: Node + 'a> {
+    inner: &'a mut N,
 }
 
-impl<'a> From<&'a mut Box<dyn Node>> for NodeMut<'a> {
-    fn from(value: &'a mut Box<dyn Node>) -> Self {
-        Self { inner: value.as_mut() }
-    }
-}
-
-impl<'a> From<&'a mut dyn Node> for NodeMut<'a> {
-    fn from(value: &'a mut dyn Node) -> NodeMut<'a> {
+impl<'a, N: Node> From<&'a mut N> for NodeMut<'a, N> {
+    fn from(value: &'a mut N) -> Self {
         Self { inner: value }
     }
 }
 
-impl<'a> Deref for NodeMut<'a> {
-    type Target = dyn Node + 'a;
+impl<'a, N: Node> Deref for NodeMut<'a, N> {
+    type Target = N;
 
     fn deref(&self) -> &Self::Target {
         self.inner
     }
 }
 
-impl DerefMut for NodeMut<'_> {
+impl<N: Node> DerefMut for NodeMut<'_, N> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.inner
     }
 }
 
-impl<'a> From<NodeMut<'a>> for NodeRef<'a> {
-    fn from(value: NodeMut<'a>) -> Self {
+impl<'a, N: Node> From<NodeMut<'a, N>> for NodeRef<'a, N> {
+    fn from(value: NodeMut<'a, N>) -> Self {
         Self { inner: value.inner }
     }
 }
