@@ -16,35 +16,53 @@ pub struct HashGraph<Vertex, Edge = ()> {
 }
 
 impl<Vertex, Edge> HashGraph<Vertex, Edge> {
+    /// Inserts a vertex into the graph.
     pub fn insert_vertex(&mut self, vertex: Vertex) -> NodeId {
         todo!()
     }
 
+    /// Removes a vertex from the graph, severing any links.
+    /// Returns an iterator over links that were severed.
     pub fn remove_vertex(&mut self, vertex: NodeId) -> Option<Vertex> {
         todo!()
     }
 
+    /// Immutably borrows a vertex from the graph.
     pub fn get_vertex(&self, vertex: NodeId) -> Option<&VertexItem<Vertex>> {
         todo!()
     }
 
+    /// Mutably borrows a vertex from the graph.
     pub fn get_mut_vertex(&mut self, vertex: NodeId) -> Option<&mut VertexItem<Vertex>> {
         todo!()
     }
 
+    /// Create a link between two sockets on two nodes.
+    /// Returns `Err` if creating this link would cause a cycle.
     pub fn insert_link(&mut self, link: NodeLinkId) -> Result<(), WouldCycle> {
         todo!()
     }
 
+    /// Removes a link from the graph.
     pub fn remove_link(&mut self, link: NodeLinkId) {
         todo!()
     }
 
+    /// Borrow an [`EdgeSet`] if it exists.
+    #[inline]
     pub fn get_edges(&self, left: NodeId, right: NodeId) -> Option<&EdgeSet<Edge>> {
-        todo!()
+        self.edges.get(&[left, right])
     }
 
+    /// Mutably borrow an [`EdgeSet`] if it exists.
+    #[inline]
     pub fn get_mut_edges(&mut self, left: NodeId, right: NodeId) -> Option<&mut EdgeSet<Edge>> {
+        self.edges.get_mut(&[left, right])
+    }
+
+    /// Mutably borrow, or try to create, an [`EdgeSet`].
+    /// If the edge does not exist, and creating it would create a cycle, this returns an error.
+    pub fn get_or_insert_edges(&mut self, left: NodeId, right: NodeId) -> Result<&mut EdgeSet<Edge>, WouldCycle> {
         todo!()
     }
 }
