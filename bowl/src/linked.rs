@@ -125,10 +125,15 @@ impl<V, E> HashGraph<V, E> {
         todo!()
     }
 
-    /// Recursively iterates over the dependencies of `node`.
+    /// Recursively iterates over the dependencies of `node`, returning them as they're discovered.
     /// If you don't want to recurse, use [`iter_direct_dependencies`](Self::iter_direct_dependencies).
     pub fn iter_dependencies(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
-        return [].iter().cloned() // TODO
+        Dfs::new(self, node).into_iter(self)
+    }
+
+    /// Recursively iterates over the dependencies of `node`, returning dependencies first.
+    pub fn iter_dependencies_postorder(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
+        DfsPostOrder::new(self, node).into_iter(self)
     }
 
     /// Iterates over the direct dependencies of `node`. Does not recurse.
@@ -339,6 +344,23 @@ impl Dfs {
 
         return None;
     }
+
+    fn into_iter<V, E>(self, graph: &HashGraph<V, E>) -> DfsIter<'_, V, E> {
+        DfsIter { graph, state: self }
+    }
+}
+
+struct DfsIter<'a, V, E> {
+    graph: &'a HashGraph<V, E>,
+    state: Dfs,
+}
+
+impl<'a, V, E> Iterator for DfsIter<'a, V, E> {
+    type Item = NodeId;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.state.next(self.graph)
+    }
 }
 
 struct DfsPostOrder {
@@ -376,5 +398,22 @@ impl DfsPostOrder {
         }
 
         return None;
+    }
+
+    fn into_iter<V, E>(self, graph: &HashGraph<V, E>) -> DfsPostOrderIter<'_, V, E> {
+        DfsPostOrderIter { graph, state: self }
+    }
+}
+
+struct DfsPostOrderIter<'a, V, E> {
+    graph: &'a HashGraph<V, E>,
+    state: DfsPostOrder,
+}
+
+impl<'a, V, E> Iterator for DfsPostOrderIter<'a, V, E> {
+    type Item = NodeId;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.state.next(self.graph)
     }
 }
