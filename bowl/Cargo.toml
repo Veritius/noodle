@@ -13,3 +13,6 @@ std = []
 [dependencies.noodle_core]
 version = "0.1.0"
 path = "../core"
+
+[dependencies.hashbrown]
+version = "0.14.5"

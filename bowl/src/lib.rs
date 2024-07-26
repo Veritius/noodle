@@ -12,3 +12,9 @@ pub use noodle_core;
 
 // Internal modules
 mod linked;
+
+pub mod internals {
+    //! Internal types.
+
+    pub use crate::linked::{HashGraph, VertexItem, EdgeItem};
+}
