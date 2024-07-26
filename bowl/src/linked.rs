@@ -314,9 +314,12 @@ struct Dfs {
 }
 
 impl Dfs {
-    fn new<V, E>(graph: &HashGraph<V, E>) -> Self {
+    fn new<V, E>(graph: &HashGraph<V, E>, start: NodeId) -> Self {
+        let mut stack = Vec::with_capacity(1);
+        stack.push(start);
+
         Self {
-            stack: Vec::new(),
+            stack,
             discovered: Visited::new(),
         }
     }
@@ -345,9 +348,12 @@ struct DfsPostOrder {
 }
 
 impl DfsPostOrder {
-    fn new<V, E>(graph: &HashGraph<V, E>) -> Self {
+    fn new<V, E>(graph: &HashGraph<V, E>, start: NodeId) -> Self {
+        let mut stack = Vec::with_capacity(1);
+        stack.push(start);
+
         Self {
-            stack: Vec::new(),
+            stack,
             discovered: Visited::new(),
             finished: Visited::new(),
         }
