@@ -16,5 +16,5 @@ mod linked;
 pub mod internals {
     //! Internal types.
 
-    pub use crate::linked::{HashGraph, VertexItem, EdgeItem};
+    pub use crate::linked::{HashGraph, VertexItem, Edges};
 }

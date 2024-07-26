@@ -16,3 +16,7 @@ path = "../core"
 
 [dependencies.hashbrown]
 version = "0.14.5"
+
+[dependencies.smallvec]
+version = "1.13"
+features = ["union"]
