@@ -64,7 +64,7 @@ impl<N: Node> Graph<N> for SimpleGraph<N> {
         &mut self,
         node: NodeId,
         outputs: OutputMask,
-    ) -> Result<SocketValues, ()> {
+    ) -> Result<SocketValues, GraphSolveError> {
         todo!()
     }
 }

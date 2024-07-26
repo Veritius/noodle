@@ -3,11 +3,13 @@
 #![doc=include_str!("../../README.md")]
 #![warn(missing_docs)]
 
+mod errors;
 mod graph;
 mod node;
 mod socket;
 mod value;
 
+pub use errors::*;
 pub use graph::*;
 pub use node::*;
 pub use socket::*;

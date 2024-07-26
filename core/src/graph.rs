@@ -63,5 +63,5 @@ pub trait Graph<N: Node> {
         &mut self,
         node: NodeId,
         outputs: OutputMask,
-    ) -> Result<SocketValues, ()>;
+    ) -> Result<SocketValues, GraphSolveError>;
 }

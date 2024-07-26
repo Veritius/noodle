@@ -29,7 +29,11 @@ pub trait Node {
     fn output_sockets(&self) -> SocketSet;
 
     /// 'Executes' the node, returning the output if successful.
-    fn execute(&self, values: SocketValues, mask: OutputMask) -> Result<SocketValues, ()>;
+    fn execute(
+        &self,
+        values: SocketValues,
+        mask: OutputMask,
+    ) -> Result<SocketValues, NodeExecutionError>;
 }
 
 /// A reference to a [`Node`] object.
