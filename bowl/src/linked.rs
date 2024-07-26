@@ -111,6 +111,28 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
     pub fn get_or_insert_edges(&mut self, left: NodeId, right: NodeId) -> Result<&mut EdgeSet<Edge>, WouldCycle> {
         todo!()
     }
+
+    /// Recursively iterates over the dependencies of `node`.
+    /// If you don't want to recurse, use [`iter_direct_dependencies`](Self::iter_direct_dependencies).
+    pub fn iter_dependencies(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
+        return [].iter() // TODO
+    }
+
+    /// Iterates over the dependencies of `node`. Does not recurse.
+    pub fn iter_direct_dependencies(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
+        return [].iter() // TODO
+    }
+
+    /// Recursively iterates over the nodes dependent on `node`.
+    /// If you don't want to recurse, use [`iter_direct_dependents`](Self::iter_direct_dependents).
+    pub fn iter_dependents(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
+        return [].iter() // TODO
+    }
+
+    /// Iterates over the nodes dependent on `node`. Does not recurse.
+    pub fn iter_direct_dependents(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
+        return [].iter() // TODO
+    }
 }
 
 /// A vertex entry in a [`HashGraph`].
