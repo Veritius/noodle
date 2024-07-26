@@ -13,22 +13,7 @@ default=[]
 # Major features
 std = []
 
-# Impls for remote crates
-petgraph = ["std", "dep:petgraph"]
-daggy = ["petgraph", "dep:daggy", "dep:smallvec"]
-
 [dependencies.smallvec]
 version = "1.13"
 features = ["union", "const_generics"]
-optional = true
-
-[dependencies.petgraph]
-version = "0.6"
-default-features = false
-optional = true
-
-[dependencies.daggy]
-version = "0.8"
-features = ["stable_dag"]
-default-features = false
 optional = true

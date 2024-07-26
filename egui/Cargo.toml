@@ -9,7 +9,12 @@ description="Egui integration for noodle"
 [dependencies.noodle_core]
 version = "0.1.0"
 path = "../core"
-features = ["daggy"]
+features = ["std"]
+
+[dependencies.noodle_bowl]
+version = "0.1.0"
+path = "../bowl"
+features = ["std"]
 
 [dependencies.egui]
 version = "0.28"
