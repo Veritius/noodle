@@ -10,7 +10,8 @@ use noodle_core::*;
 /// This is still exposed for the use of advanced users.
 #[derive(Default)]
 pub struct HashGraph<Vertex, Edge = (), VertexId = NodeId, EdgeId = SocketLinkId> {
-    vertices: HashMap<VertexId, VertexItem<Vertex, Edge, EdgeId>>,
+    vertices: HashMap<VertexId, VertexItem<Vertex>>,
+    edges: HashMap<InnerEdgeId<VertexId, EdgeId>, EdgeItem<Edge>>,
 }
 
 impl<Vertex, Edge, VertexId, EdgeId> HashGraph<Vertex, Edge, VertexId, EdgeId> {
@@ -22,11 +23,11 @@ impl<Vertex, Edge, VertexId, EdgeId> HashGraph<Vertex, Edge, VertexId, EdgeId> {
         todo!()
     }
 
-    pub fn get_vertex(&self, vertex: VertexId) -> Option<&VertexItem<Vertex, Edge, EdgeId>> {
+    pub fn get_vertex(&self, vertex: VertexId) -> Option<&VertexItem<Vertex>> {
         todo!()
     }
 
-    pub fn get_mut_vertex(&mut self, vertex: VertexId) -> Option<&mut VertexItem<Vertex, Edge, EdgeId>> {
+    pub fn get_mut_vertex(&mut self, vertex: VertexId) -> Option<&mut VertexItem<Vertex>> {
         todo!()
     }
 
@@ -40,12 +41,16 @@ impl<Vertex, Edge, VertexId, EdgeId> HashGraph<Vertex, Edge, VertexId, EdgeId> {
 }
 
 /// A vertex entry in a [`HashGraph`].
-pub struct VertexItem<Vertex, Edge, EdgeId> {
+pub struct VertexItem<Vertex> {
     item: Vertex,
-    edges: HashMap<EdgeId, EdgeItem<Edge>>,
 }
 
 /// An edge entry in a [`HashGraph`].
 pub struct EdgeItem<Edge> {
     item: Edge,
+}
+
+struct InnerEdgeId<VertexId, EdgeId> {
+    vtx: VertexId,
+    edge: EdgeId,
 }
