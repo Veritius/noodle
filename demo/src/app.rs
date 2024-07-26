@@ -1,6 +1,5 @@
 use eframe::egui;
 use egui::Widget;
-use noodle_daggy::CachedGraph;
 use noodle_egui::graphview::GraphViewBuilder;
 use crate::settings::AppSettings;
 
