@@ -272,3 +272,33 @@ impl<E> Iterator for SeveredLinks<'_, E> {
         return Some(item);
     }
 }
+
+struct VisitedStack(Vec<NodeId>);
+
+impl VisitedStack {
+    fn new() -> Self {
+        Self(Vec::new())
+    }
+
+    fn with_capacity(amt: usize) -> Self {
+        Self(Vec::with_capacity(amt))
+    }
+
+    fn set_visited(&mut self, id: NodeId) {
+        match self.0.binary_search(&id) {
+            Ok(_) => {
+                #[cfg(debug_assertions)]
+                panic!("A node was visited twice");
+            },
+
+            Err(idx) => {
+                self.0.insert(idx, id);
+            },
+        }
+    }
+
+    #[inline]
+    fn is_visited(&self, id: NodeId) -> bool {
+        self.0.binary_search(&id).is_ok()
+    }
+}
