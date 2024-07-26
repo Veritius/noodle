@@ -15,7 +15,12 @@ impl Debug for NodeId {
     }
 }
 
-/// A node type.
+/// A node that can appear in a [`Graph`].
+/// 
+/// Nodes can be thought of as functions. They take an input, and return an output.
+/// Unlike functions in many languages, however, they are extremely flexible.
+/// Nodes can have an unlimited amount of inputs and outputs, and they can both
+/// be defined at runtime, and change while the node is in the graph.
 pub trait Node {
     /// Returns a `str` that identifies the node type.
     /// 
@@ -34,6 +39,9 @@ pub trait Node {
         values: SocketValues,
         mask: OutputMask,
     ) -> Result<SocketValues, NodeExecutionError>;
+
+    /// Returns `true` if the output of this node changed since [`execute`](Node::execute) was called.
+    fn changed_since_last_run(&self) -> bool;
 }
 
 /// A reference to a [`Node`] object.
