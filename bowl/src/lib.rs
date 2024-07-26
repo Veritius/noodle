@@ -4,4 +4,11 @@
 
 #![warn(missing_docs)]
 
+// Dependency stuff
 extern crate alloc;
+
+// Re-exports
+pub use noodle_core;
+
+// Internal modules
+mod linked;
