@@ -1,3 +1,5 @@
+use std::marker::PhantomData;
+
 use hashbrown::HashMap;
 use noodle_core::*;
 use smallvec::SmallVec;
@@ -23,8 +25,37 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
 
     /// Removes a vertex from the graph, severing any links.
     /// Returns an iterator over links that were severed.
-    pub fn remove_vertex(&mut self, vertex: NodeId) -> Option<Vertex> {
-        todo!()
+    pub fn remove_vertex(&mut self, vertex: NodeId) -> Option<(Vertex, SeveredLinks<Vertex, Edge>)> {
+        // We can early return if the vertex doesn't exist,
+        // since that means there are no links to it
+        let vtx = self.vertices.remove(&vertex)?;
+
+        let extract = self.edges.extract_if(|k, _| {
+            // Simple comparison function
+            k[0] == vertex || k[1] == vertex
+        });
+
+        // Converts the various ids to a collection of NodeLinkIds
+        let iter = extract
+            .flat_map(|([l, r], s)| {
+                s.edges.iter().map(|i| NodeLinkId {
+                    left: NodeSocketId { node: l, socket: i.id.from },
+                    right: NodeSocketId { node: r, socket: i.id.to },
+                }).collect::<Vec<_>>() // TODO: don't allocate
+            })
+            .collect::<Box<[_]>>();
+
+        // Return the iterator over severed links
+        let severed = SeveredLinks {
+            index: 0,
+            items: iter,
+            
+            _p1: PhantomData,
+            _p2: PhantomData,
+            _p3: PhantomData,
+        };
+
+        return Some((vtx.item, severed))
     }
 
     /// Immutably borrows a vertex from the graph.
@@ -99,4 +130,32 @@ impl<Edge> EdgeSet<Edge> {
 struct EdgeItem<Edge> {
     id: SocketLinkId,
     edge: Edge,
+}
+
+/// An iterator over links severed by [`remove_vertex`](HashGraph::remove_vertex) and related functions.
+pub struct SeveredLinks<'a, Vertex, Edge> {
+    index: usize,
+    items: Box<[NodeLinkId]>,
+
+    // these may appear redundant, and they are,
+    // but they let us dramatically change the
+    // internals of this iterator without
+    // needing to make breaking changes
+    _p1: PhantomData<&'a ()>,
+    _p2: PhantomData<Vertex>,
+    _p3: PhantomData<Edge>,
+}
+
+impl<V, E> Iterator for SeveredLinks<'_, V, E> {
+    type Item = NodeLinkId;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        // Check if we've reached the end of the items
+        if self.index == self.items.len() { return None }
+
+        let item = self.items[self.index];
+        self.index += 1; // keep track of where we're at
+
+        return Some(item);
+    }
 }
