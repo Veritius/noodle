@@ -273,9 +273,9 @@ impl<E> Iterator for SeveredLinks<'_, E> {
     }
 }
 
-struct VisitedStack(Vec<NodeId>);
+struct Visited(Vec<NodeId>);
 
-impl VisitedStack {
+impl Visited {
     fn new() -> Self {
         Self(Vec::new())
     }
