@@ -12,7 +12,7 @@ use smallvec::SmallVec;
 #[derive(Default)]
 pub struct HashGraph<Vertex, Edge = ()> {
     vertices: HashMap<NodeId, VertexItem<Vertex>>,
-    edges: HashMap<[NodeId; 2], Edges<Edge>>,
+    edges: HashMap<[NodeId; 2], EdgeSet<Edge>>,
 }
 
 impl<Vertex, Edge> HashGraph<Vertex, Edge> {
@@ -32,11 +32,19 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
         todo!()
     }
 
-    pub fn insert_link(&mut self, from: NodeSocketId, to: NodeSocketId) -> Result<(), WouldCycle> {
+    pub fn insert_link(&mut self, link: NodeLinkId) -> Result<(), WouldCycle> {
         todo!()
     }
 
-    pub fn remove_link(&mut self, from: NodeSocketId, to: NodeSocketId) {
+    pub fn remove_link(&mut self, link: NodeLinkId) {
+        todo!()
+    }
+
+    pub fn get_edges(&self, left: NodeId, right: NodeId) -> Option<&EdgeSet<Edge>> {
+        todo!()
+    }
+
+    pub fn get_mut_edges(&mut self, left: NodeId, right: NodeId) -> Option<&mut EdgeSet<Edge>> {
         todo!()
     }
 }
@@ -47,11 +55,11 @@ pub struct VertexItem<Vertex> {
 }
 
 /// A set of edges between two [`VertexItem`] objects in a [`HashGraph`].
-pub struct Edges<Edge> {
+pub struct EdgeSet<Edge> {
     edges: SmallVec<[EdgeItem<Edge>; 1]>,
 }
 
-impl<Edge> Edges<Edge> {
+impl<Edge> EdgeSet<Edge> {
     /// Manually adds an edge between two nodes.
     /// 
     /// # SAFETY
