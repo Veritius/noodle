@@ -1,5 +1,4 @@
-use std::marker::PhantomData;
-
+use std::{marker::PhantomData, ops::{Deref, DerefMut}};
 use hashbrown::HashMap;
 use noodle_core::*;
 use smallvec::SmallVec;
@@ -79,7 +78,7 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
 
     /// Mutably borrows a vertex from the graph.
     #[inline]
-    pub fn get_mut_vertex(&mut self, vertex: NodeId) -> Option<&mut VertexItem<Vertex>> {
+    pub fn get_vertex_mut(&mut self, vertex: NodeId) -> Option<&mut VertexItem<Vertex>> {
         self.vertices.get_mut(&vertex)
     }
 
@@ -102,7 +101,7 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
 
     /// Mutably borrow an [`EdgeSet`] if it exists.
     #[inline]
-    pub fn get_mut_edges(&mut self, left: NodeId, right: NodeId) -> Option<&mut EdgeSet<Edge>> {
+    pub fn get_edges_mut(&mut self, left: NodeId, right: NodeId) -> Option<&mut EdgeSet<Edge>> {
         self.edges.get_mut(&[left, right])
     }
 
@@ -138,6 +137,20 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
 /// A vertex entry in a [`HashGraph`].
 pub struct VertexItem<Vertex> {
     item: Vertex,
+}
+
+impl<V> Deref for VertexItem<V> {
+    type Target = V;
+
+    fn deref(&self) -> &Self::Target {
+        &self.item
+    }
+}
+
+impl<V> DerefMut for VertexItem<V> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.item
+    }
 }
 
 /// A set of edges between two [`VertexItem`] objects in a [`HashGraph`].
