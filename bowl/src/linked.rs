@@ -59,13 +59,15 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
     }
 
     /// Immutably borrows a vertex from the graph.
+    #[inline]
     pub fn get_vertex(&self, vertex: NodeId) -> Option<&VertexItem<Vertex>> {
-        todo!()
+        self.vertices.get(&vertex)
     }
 
     /// Mutably borrows a vertex from the graph.
+    #[inline]
     pub fn get_mut_vertex(&mut self, vertex: NodeId) -> Option<&mut VertexItem<Vertex>> {
-        todo!()
+        self.vertices.get_mut(&vertex)
     }
 
     /// Create a link between two sockets on two nodes.
