@@ -5,8 +5,6 @@ use smallvec::SmallVec;
 
 /// A simple directed acyclic graph structure based on a [`HashMap`].
 /// 
-/// This type stores multiple edges between vertices, identified with the `EdgeId` generic.
-/// 
 /// This is an internal type and does not implement the [`Graph`](noodle_core::Graph) trait.
 /// You may get better use out of higher level types that do implement [`Graph`].
 /// This is still exposed for the use of advanced users.
@@ -129,7 +127,7 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
         return [].iter() // TODO
     }
 
-    /// Iterates over the dependencies of `node`. Does not recurse.
+    /// Iterates over the direct dependencies of `node`. Does not recurse.
     pub fn iter_direct_dependencies(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
         return [].iter() // TODO
     }
@@ -140,7 +138,7 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
         return [].iter() // TODO
     }
 
-    /// Iterates over the nodes dependent on `node`. Does not recurse.
+    /// Iterates over the nodes directly dependent on `node`. Does not recurse.
     pub fn iter_direct_dependents(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
         return [].iter() // TODO
     }
