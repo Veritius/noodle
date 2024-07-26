@@ -11,10 +11,5 @@ version = "0.1.0"
 path = "../core"
 features = ["std"]
 
-[dependencies.noodle_bowl]
-version = "0.1.0"
-path = "../bowl"
-features = ["std"]
-
 [dependencies.egui]
 version = "0.28"
