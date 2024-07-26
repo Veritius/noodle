@@ -3,8 +3,6 @@
 #![doc=include_str!("../../README.md")]
 #![warn(missing_docs)]
 
-extern crate alloc;
-
 mod graph;
 mod node;
 mod socket;
