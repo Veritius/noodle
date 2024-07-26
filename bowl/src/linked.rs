@@ -82,6 +82,18 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
         self.vertices.get_mut(&vertex)
     }
 
+    /// Returns the number of vertices in the graph.
+    #[inline]
+    pub fn vertex_count(&self) -> usize {
+        self.vertices.len()
+    }
+
+    /// Returns `true` if the node corresponding to `id` exists in the graph.
+    #[inline]
+    pub fn contains_vertex(&self, id: NodeId) -> bool {
+        self.vertices.contains_key(&id)
+    }
+
     /// Create a link between two sockets on two nodes.
     /// Returns `Err` if creating this link would cause a cycle.
     pub fn insert_link(&mut self, link: NodeLinkId) -> Result<(), WouldCycle> {
@@ -132,6 +144,17 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
     pub fn iter_direct_dependents(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
         return [].iter() // TODO
     }
+
+    /// Returns an iterator over all [`EdgeSet`] items in the graph.
+    #[inline]
+    pub fn iter_edge_sets(&self) -> impl Iterator<Item = &EdgeSet<Edge>> {
+        self.edges.values()
+    }
+
+    /// Counts the number of links across all edge sets.
+    pub fn link_count(&self) -> usize {
+        self.iter_edge_sets().map(|v| v.count()).sum()
+    }
 }
 
 /// A vertex entry in a [`HashGraph`].
@@ -174,6 +197,17 @@ impl<Edge> EdgeSet<Edge> {
     pub fn remove(&mut self, id: SocketLinkId) -> Option<Edge> {
         let idx = self.edges.binary_search_by(|v| v.id.cmp(&id)).ok()?;
         return Some(self.edges.remove(idx).edge);
+    }
+
+    /// Returns true if the link corresponding to `id` exists.
+    pub fn contains(&self, id: SocketLinkId) -> bool {
+        self.edges.binary_search_by(|v| v.id.cmp(&id)).is_ok()
+    }
+
+    /// Returns the number of links between the two nodes.
+    #[inline]
+    pub fn count(&self) -> usize {
+        self.edges.len()
     }
 }
 
