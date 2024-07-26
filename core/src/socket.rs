@@ -205,6 +205,7 @@ pub struct SocketLinkId {
 }
 
 /// A combination of [`NodeSocketId`] items, defining a full link between items.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct NodeLinkId {
     /// The left socket.
     pub left: NodeSocketId,
