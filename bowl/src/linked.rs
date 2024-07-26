@@ -119,6 +119,9 @@ impl<V, E> HashGraph<V, E> {
     /// Mutably borrow, or try to create, an [`Edges`].
     /// If the edge does not exist, and creating it would create a cycle, this returns an error.
     pub fn get_or_insert_edges(&mut self, left: NodeId, right: NodeId) -> Result<&mut Edges<E>, WouldCycle> {
+        // If it exists, return it as per usual.
+        if let Some(edges) = self.get_edges_mut(left, right) { return Ok(edges); }
+
         todo!()
     }
 
