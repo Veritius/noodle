@@ -13,14 +13,28 @@ use smallvec::SmallVec;
 /// This is still exposed for the use of advanced users.
 #[derive(Default)]
 pub struct HashGraph<Vertex, Edge = ()> {
+    last_idx: u32,
     vertices: HashMap<NodeId, VertexItem<Vertex>>,
     edges: HashMap<[NodeId; 2], EdgeSet<Edge>>,
 }
 
 impl<Vertex, Edge> HashGraph<Vertex, Edge> {
+    #[inline]
+    fn next_node_id(&mut self) -> NodeId {
+        let v = self.last_idx;
+        self.last_idx += 1;
+        return NodeId(v);
+    }
+
     /// Inserts a vertex into the graph.
     pub fn insert_vertex(&mut self, vertex: Vertex) -> NodeId {
-        todo!()
+        let id = self.next_node_id();
+
+        self.vertices.insert(id, VertexItem {
+            item: vertex
+        });
+
+        return id;
     }
 
     /// Removes a vertex from the graph, severing any links.
