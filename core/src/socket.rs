@@ -1,4 +1,4 @@
-use core::{marker::PhantomData, any::TypeId};
+use core::{any::TypeId, fmt::Debug, marker::PhantomData};
 use super::*;
 
 pub use sorted::*;
@@ -7,8 +7,16 @@ pub use sorted::*;
 /// 
 /// The inputs and outputs have unique ID sets.
 /// Mixing them is not recommended.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(transparent)]
 pub struct SocketId(pub u16);
+
+impl Debug for SocketId {
+    #[inline]
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        self.0.fmt(f)
+    }
+}
 
 /// The shape of the socket.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

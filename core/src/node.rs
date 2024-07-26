@@ -1,11 +1,19 @@
-use core::ops::{Deref, DerefMut};
+use core::{fmt::Debug, ops::{Deref, DerefMut}};
 use super::*;
 
 /// A unique identifier for a [`Node`] within a [`Graph`].
 /// 
 /// A `NodeId` is only unique to the `Graph` that its `Node` exists in.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(transparent)]
 pub struct NodeId(pub u32);
+
+impl Debug for NodeId {
+    #[inline]
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        self.0.fmt(f)
+    }
+}
 
 /// A node type.
 pub trait Node {
