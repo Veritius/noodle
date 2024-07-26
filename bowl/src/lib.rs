@@ -17,7 +17,7 @@ mod simple;
 pub mod internals {
     //! Internal types.
 
-    pub use crate::linked::{HashGraph, VertexItem, EdgeSet, SeveredLinks};
+    pub use crate::linked::{HashGraph, Vertex, Edges, SeveredLinks};
 }
 
 pub use simple::*;

@@ -10,13 +10,13 @@ use smallvec::SmallVec;
 /// You may get better use out of higher level types that do implement [`Graph`].
 /// This is still exposed for the use of advanced users.
 #[derive(Default)]
-pub struct HashGraph<Vertex, Edge = ()> {
+pub struct HashGraph<V, E = ()> {
     last_idx: u32,
-    vertices: HashMap<NodeId, VertexItem<Vertex>>,
-    edges: HashMap<[NodeId; 2], EdgeSet<Edge>>,
+    vertices: HashMap<NodeId, Vertex<V>>,
+    edges: HashMap<[NodeId; 2], Edges<E>>,
 }
 
-impl<Vertex, Edge> HashGraph<Vertex, Edge> {
+impl<V, E> HashGraph<V, E> {
     #[inline]
     fn next_node_id(&mut self) -> NodeId {
         let v = self.last_idx;
@@ -25,10 +25,10 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
     }
 
     /// Inserts a vertex into the graph.
-    pub fn insert_vertex(&mut self, vertex: Vertex) -> NodeId {
+    pub fn insert_vertex(&mut self, vertex: V) -> NodeId {
         let id = self.next_node_id();
 
-        self.vertices.insert(id, VertexItem {
+        self.vertices.insert(id, Vertex {
             item: vertex
         });
 
@@ -37,7 +37,7 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
 
     /// Removes a vertex from the graph, severing any links.
     /// Returns an iterator over links that were severed.
-    pub fn remove_vertex(&mut self, vertex: NodeId) -> Option<(Vertex, SeveredLinks<Edge>)> {
+    pub fn remove_vertex(&mut self, vertex: NodeId) -> Option<(V, SeveredLinks<E>)> {
         // We can early return if the vertex doesn't exist,
         // since that means there are no links to it
         let vtx = self.vertices.remove(&vertex)?;
@@ -71,13 +71,13 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
 
     /// Immutably borrows a vertex from the graph.
     #[inline]
-    pub fn get_vertex(&self, vertex: NodeId) -> Option<&VertexItem<Vertex>> {
+    pub fn get_vertex(&self, vertex: NodeId) -> Option<&Vertex<V>> {
         self.vertices.get(&vertex)
     }
 
     /// Mutably borrows a vertex from the graph.
     #[inline]
-    pub fn get_vertex_mut(&mut self, vertex: NodeId) -> Option<&mut VertexItem<Vertex>> {
+    pub fn get_vertex_mut(&mut self, vertex: NodeId) -> Option<&mut Vertex<V>> {
         self.vertices.get_mut(&vertex)
     }
 
@@ -104,49 +104,49 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
         todo!()
     }
 
-    /// Borrow an [`EdgeSet`] if it exists.
+    /// Borrow [`Edges`] if it exists.
     #[inline]
-    pub fn get_edges(&self, left: NodeId, right: NodeId) -> Option<&EdgeSet<Edge>> {
+    pub fn get_edges(&self, left: NodeId, right: NodeId) -> Option<&Edges<E>> {
         self.edges.get(&[left, right])
     }
 
-    /// Mutably borrow an [`EdgeSet`] if it exists.
+    /// Mutably borrow [`Edges`] if it exists.
     #[inline]
-    pub fn get_edges_mut(&mut self, left: NodeId, right: NodeId) -> Option<&mut EdgeSet<Edge>> {
+    pub fn get_edges_mut(&mut self, left: NodeId, right: NodeId) -> Option<&mut Edges<E>> {
         self.edges.get_mut(&[left, right])
     }
 
-    /// Mutably borrow, or try to create, an [`EdgeSet`].
+    /// Mutably borrow, or try to create, an [`Edges`].
     /// If the edge does not exist, and creating it would create a cycle, this returns an error.
-    pub fn get_or_insert_edges(&mut self, left: NodeId, right: NodeId) -> Result<&mut EdgeSet<Edge>, WouldCycle> {
+    pub fn get_or_insert_edges(&mut self, left: NodeId, right: NodeId) -> Result<&mut Edges<E>, WouldCycle> {
         todo!()
     }
 
     /// Recursively iterates over the dependencies of `node`.
     /// If you don't want to recurse, use [`iter_direct_dependencies`](Self::iter_direct_dependencies).
-    pub fn iter_dependencies(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
+    pub fn iter_dependencies(&self, node: NodeId) -> impl Iterator<Item = &V> {
         return [].iter() // TODO
     }
 
     /// Iterates over the direct dependencies of `node`. Does not recurse.
-    pub fn iter_direct_dependencies(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
+    pub fn iter_direct_dependencies(&self, node: NodeId) -> impl Iterator<Item = &V> {
         return [].iter() // TODO
     }
 
     /// Recursively iterates over the nodes dependent on `node`.
     /// If you don't want to recurse, use [`iter_direct_dependents`](Self::iter_direct_dependents).
-    pub fn iter_dependents(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
+    pub fn iter_dependents(&self, node: NodeId) -> impl Iterator<Item = &V> {
         return [].iter() // TODO
     }
 
     /// Iterates over the nodes directly dependent on `node`. Does not recurse.
-    pub fn iter_direct_dependents(&self, node: NodeId) -> impl Iterator<Item = &Vertex> {
+    pub fn iter_direct_dependents(&self, node: NodeId) -> impl Iterator<Item = &V> {
         return [].iter() // TODO
     }
 
-    /// Returns an iterator over all [`EdgeSet`] items in the graph.
+    /// Returns an iterator over all [`Edges`] items in the graph.
     #[inline]
-    pub fn iter_edge_sets(&self) -> impl Iterator<Item = &EdgeSet<Edge>> {
+    pub fn iter_edge_sets(&self) -> impl Iterator<Item = &Edges<E>> {
         self.edges.values()
     }
 
@@ -166,11 +166,11 @@ impl<V: Debug, E: Debug> Debug for HashGraph<V, E> {
 }
 
 /// A vertex entry in a [`HashGraph`].
-pub struct VertexItem<Vertex> {
-    item: Vertex,
+pub struct Vertex<V> {
+    item: V,
 }
 
-impl<V> Deref for VertexItem<V> {
+impl<V> Deref for Vertex<V> {
     type Target = V;
 
     fn deref(&self) -> &Self::Target {
@@ -178,38 +178,38 @@ impl<V> Deref for VertexItem<V> {
     }
 }
 
-impl<V> DerefMut for VertexItem<V> {
+impl<V> DerefMut for Vertex<V> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.item
     }
 }
 
-impl<V: Debug> Debug for VertexItem<V> {
+impl<V: Debug> Debug for Vertex<V> {
     #[inline]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         self.item.fmt(f)
     }
 }
 
-/// A set of edges between two [`VertexItem`] objects in a [`HashGraph`].
-pub struct EdgeSet<Edge> {
-    edges: SmallVec<[EdgeItem<Edge>; 1]>,
+/// A set of edges between two [`Vertex`] objects in a [`HashGraph`].
+pub struct Edges<E> {
+    edges: SmallVec<[EdgeItem<E>; 1]>,
 }
 
-impl<Edge> EdgeSet<Edge> {
+impl<E> Edges<E> {
     /// Manually adds an edge between two nodes.
     /// 
     /// # SAFETY
     /// Adding an edge **must not** create a cycle in the graph.
     /// The connection requirements of the socket shape must be followed.
-    pub unsafe fn insert(&mut self, id: SocketLinkId, edge: Edge) {
+    pub unsafe fn insert(&mut self, id: SocketLinkId, edge: E) {
         if let Err(idx) = self.edges.binary_search_by(|v| v.id.cmp(&id)) {
             self.edges.insert(idx, EdgeItem { id, edge });
         }
     }
 
     /// Manually removes an edge between two nodes.
-    pub fn remove(&mut self, id: SocketLinkId) -> Option<Edge> {
+    pub fn remove(&mut self, id: SocketLinkId) -> Option<E> {
         let idx = self.edges.binary_search_by(|v| v.id.cmp(&id)).ok()?;
         return Some(self.edges.remove(idx).edge);
     }
@@ -226,7 +226,7 @@ impl<Edge> EdgeSet<Edge> {
     }
 }
 
-impl<E: Debug> Debug for EdgeSet<E> {
+impl<E: Debug> Debug for Edges<E> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         self.edges.fmt(f)
     }
