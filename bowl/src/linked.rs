@@ -9,7 +9,7 @@ use noodle_core::*;
 /// You may get better use out of higher level types that do implement [`Graph`].
 /// This is still exposed for the use of advanced users.
 #[derive(Default)]
-pub struct HashGraph<Vertex, Edge = (), VertexId = NodeId, EdgeId = LinkId> {
+pub struct HashGraph<Vertex, Edge = (), VertexId = NodeId, EdgeId = SocketLinkId> {
     vertices: HashMap<VertexId, VertexItem<Vertex, Edge, EdgeId>>,
 }
 

@@ -196,12 +196,21 @@ pub struct NodeSocketId {
 
 /// A pair of [`SocketId`] values, identifying a link between sockets.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct LinkId {
+pub struct SocketLinkId {
     /// The left socket.
     pub from: SocketId,
 
     /// The right socket.
     pub to: SocketId,
+}
+
+/// A combination of [`NodeSocketId`] items, defining a full link between items.
+pub struct NodeLinkId {
+    /// The left socket.
+    pub left: NodeSocketId,
+
+    /// The right socket.
+    pub right: NodeSocketId,
 }
 
 /// Returned when adding a link would form a cycle in the graph.
