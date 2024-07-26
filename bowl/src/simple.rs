@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 use noodle_core::*;
-use crate::linked::HashGraph;
+use crate::hashgraph::HashGraph;
 
 /// A simple [`Graph`] implementation.
 #[derive(Debug)]

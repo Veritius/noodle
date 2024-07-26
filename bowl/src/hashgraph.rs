@@ -1,3 +1,5 @@
+//! A graph backed by a [`HashMap`].
+
 use core::fmt::Debug;
 use std::{marker::PhantomData, ops::{Deref, DerefMut}};
 use hashbrown::HashMap;
