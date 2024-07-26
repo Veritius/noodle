@@ -284,15 +284,13 @@ impl Visited {
         Self(Vec::with_capacity(amt))
     }
 
-    fn set_visited(&mut self, id: NodeId) {
+    fn visit(&mut self, id: NodeId) -> bool {
         match self.0.binary_search(&id) {
-            Ok(_) => {
-                #[cfg(debug_assertions)]
-                panic!("A node was visited twice");
-            },
+            Ok(_) => { return false },
 
             Err(idx) => {
                 self.0.insert(idx, id);
+                return true;
             },
         }
     }
@@ -300,5 +298,35 @@ impl Visited {
     #[inline]
     fn is_visited(&self, id: NodeId) -> bool {
         self.0.binary_search(&id).is_ok()
+    }
+}
+
+struct Dfs {
+    stack: Vec<NodeId>,
+    discovered: Visited,
+}
+
+impl Dfs {
+    fn new<V, E>(graph: &HashGraph<V, E>) -> Self {
+        Self {
+            stack: Vec::new(),
+            discovered: Visited::new(),
+        }
+    }
+
+    fn next<V, E>(&mut self, graph: &HashGraph<V, E>) -> Option<NodeId> {
+        while let Some(node) = self.stack.pop() {
+            if self.discovered.visit(node) {
+                // for next in todo!() {
+                //     if !self.discovered.is_visited(next) {
+                //         self.stack.push(next);
+                //     }
+                // }
+
+                return Some(node);
+            }
+        }
+
+        return None;
     }
 }
