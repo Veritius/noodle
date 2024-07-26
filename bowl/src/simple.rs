@@ -3,6 +3,7 @@ use noodle_core::*;
 use crate::linked::HashGraph;
 
 /// A simple [`Graph`] implementation.
+#[derive(Debug)]
 pub struct SimpleGraph<N> {
     graph: HashGraph<N>,
 }

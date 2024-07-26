@@ -1,3 +1,4 @@
+use core::fmt::Debug;
 use std::{marker::PhantomData, ops::{Deref, DerefMut}};
 use hashbrown::HashMap;
 use noodle_core::*;
@@ -155,6 +156,15 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
     }
 }
 
+impl<V: Debug, E: Debug> Debug for HashGraph<V, E> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("HashGraph")
+        .field("vertices", &self.vertices)
+        .field("edges", &self.edges)
+        .finish()
+    }
+}
+
 /// A vertex entry in a [`HashGraph`].
 pub struct VertexItem<Vertex> {
     item: Vertex,
@@ -171,6 +181,13 @@ impl<V> Deref for VertexItem<V> {
 impl<V> DerefMut for VertexItem<V> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.item
+    }
+}
+
+impl<V: Debug> Debug for VertexItem<V> {
+    #[inline]
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        self.item.fmt(f)
     }
 }
 
@@ -209,9 +226,24 @@ impl<Edge> EdgeSet<Edge> {
     }
 }
 
+impl<E: Debug> Debug for EdgeSet<E> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        self.edges.fmt(f)
+    }
+}
+
 struct EdgeItem<Edge> {
     id: SocketLinkId,
     edge: Edge,
+}
+
+impl<E: Debug> Debug for EdgeItem<E> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("EdgeItem")
+        .field("id", &self.id)
+        .field("edge", &self.edge)
+        .finish()
+    }
 }
 
 /// An iterator over links severed by [`remove_vertex`](HashGraph::remove_vertex) and related functions.
