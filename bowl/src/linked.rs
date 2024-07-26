@@ -332,3 +332,38 @@ impl Dfs {
         return None;
     }
 }
+
+struct DfsPostOrder {
+    stack: Vec<NodeId>,
+    discovered: Visited,
+    finished: Visited,
+}
+
+impl DfsPostOrder {
+    fn new<V, E>(graph: &HashGraph<V, E>) -> Self {
+        Self {
+            stack: Vec::new(),
+            discovered: Visited::new(),
+            finished: Visited::new(),
+        }
+    }
+
+    fn next<V, E>(&mut self, graph: &HashGraph<V, E>) -> Option<NodeId> {
+        while let Some(next) = self.stack.last().cloned() {
+            if self.discovered.visit(next) {
+                for sp in graph.iter_direct_dependencies(next) {
+                    if !self.discovered.is_visited(sp) {
+                        self.stack.push(sp);
+                    }
+                }
+            } else {
+                self.stack.pop();
+                if self.finished.visit(next) {
+                    return Some(next);
+                }
+            }
+        }
+
+        return None;
+    }
+}
