@@ -130,7 +130,9 @@ impl<V, E> HashGraph<V, E> {
 
     /// Iterates over the direct dependencies of `node`. Does not recurse.
     pub fn iter_direct_dependencies(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
-        return [].iter().cloned() // TODO
+        self.edges.iter()
+            .filter(move |([_, r], _)| *r == node)
+            .map(|([l, _], _)| *l)
     }
 
     /// Recursively iterates over the nodes dependent on `node`.
