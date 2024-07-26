@@ -124,24 +124,26 @@ impl<V, E> HashGraph<V, E> {
 
     /// Recursively iterates over the dependencies of `node`.
     /// If you don't want to recurse, use [`iter_direct_dependencies`](Self::iter_direct_dependencies).
-    pub fn iter_dependencies(&self, node: NodeId) -> impl Iterator<Item = &V> {
-        return [].iter() // TODO
+    pub fn iter_dependencies(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
+        return [].iter().cloned() // TODO
     }
 
     /// Iterates over the direct dependencies of `node`. Does not recurse.
-    pub fn iter_direct_dependencies(&self, node: NodeId) -> impl Iterator<Item = &V> {
-        return [].iter() // TODO
+    pub fn iter_direct_dependencies(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
+        return [].iter().cloned() // TODO
     }
 
     /// Recursively iterates over the nodes dependent on `node`.
     /// If you don't want to recurse, use [`iter_direct_dependents`](Self::iter_direct_dependents).
-    pub fn iter_dependents(&self, node: NodeId) -> impl Iterator<Item = &V> {
-        return [].iter() // TODO
+    pub fn iter_dependents(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
+        return [].iter().cloned() // TODO
     }
 
     /// Iterates over the nodes directly dependent on `node`. Does not recurse.
-    pub fn iter_direct_dependents(&self, node: NodeId) -> impl Iterator<Item = &V> {
-        return [].iter() // TODO
+    pub fn iter_direct_dependents(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
+        self.edges.iter()
+            .filter(move |([l, _], _)| *l == node)
+            .map(|([_, r], _)| *r)
     }
 
     /// Returns an iterator over all [`Edges`] items in the graph.
@@ -317,11 +319,11 @@ impl Dfs {
     fn next<V, E>(&mut self, graph: &HashGraph<V, E>) -> Option<NodeId> {
         while let Some(node) = self.stack.pop() {
             if self.discovered.visit(node) {
-                // for next in todo!() {
-                //     if !self.discovered.is_visited(next) {
-                //         self.stack.push(next);
-                //     }
-                // }
+                for next in graph.iter_direct_dependencies(node) {
+                    if !self.discovered.is_visited(next) {
+                        self.stack.push(next);
+                    }
+                }
 
                 return Some(node);
             }
