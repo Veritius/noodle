@@ -39,7 +39,7 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
 
     /// Removes a vertex from the graph, severing any links.
     /// Returns an iterator over links that were severed.
-    pub fn remove_vertex(&mut self, vertex: NodeId) -> Option<(Vertex, SeveredLinks<Vertex, Edge>)> {
+    pub fn remove_vertex(&mut self, vertex: NodeId) -> Option<(Vertex, SeveredLinks<Edge>)> {
         // We can early return if the vertex doesn't exist,
         // since that means there are no links to it
         let vtx = self.vertices.remove(&vertex)?;
@@ -66,7 +66,6 @@ impl<Vertex, Edge> HashGraph<Vertex, Edge> {
             
             _p1: PhantomData,
             _p2: PhantomData,
-            _p3: PhantomData,
         };
 
         return Some((vtx.item, severed))
@@ -149,7 +148,7 @@ struct EdgeItem<Edge> {
 }
 
 /// An iterator over links severed by [`remove_vertex`](HashGraph::remove_vertex) and related functions.
-pub struct SeveredLinks<'a, Vertex, Edge> {
+pub struct SeveredLinks<'a, Edge> {
     index: usize,
     items: Box<[NodeLinkId]>,
 
@@ -158,11 +157,10 @@ pub struct SeveredLinks<'a, Vertex, Edge> {
     // internals of this iterator without
     // needing to make breaking changes
     _p1: PhantomData<&'a ()>,
-    _p2: PhantomData<Vertex>,
-    _p3: PhantomData<Edge>,
+    _p2: PhantomData<Edge>,
 }
 
-impl<V, E> Iterator for SeveredLinks<'_, V, E> {
+impl<E> Iterator for SeveredLinks<'_, E> {
     type Item = NodeLinkId;
 
     fn next(&mut self) -> Option<Self::Item> {
