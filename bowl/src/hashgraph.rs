@@ -1,5 +1,3 @@
-//! A graph backed by a [`HashMap`].
-
 use core::fmt::Debug;
 use std::{marker::PhantomData, ops::{Deref, DerefMut}};
 use hashbrown::HashMap;
@@ -7,10 +5,6 @@ use noodle_core::*;
 use smallvec::SmallVec;
 
 /// A simple directed acyclic graph structure based on a [`HashMap`].
-/// 
-/// This is an internal type and does not implement the [`Graph`](noodle_core::Graph) trait.
-/// You may get better use out of higher level types that do implement [`Graph`].
-/// This is still exposed for the use of advanced users.
 pub struct HashGraph<V, E = ()> {
     last_idx: u32,
     vertices: HashMap<NodeId, Vertex<V>>,
@@ -100,18 +94,18 @@ impl<V, E> HashGraph<V, E> {
 
     /// Returns `true` if the node corresponding to `id` exists in the graph.
     #[inline]
-    pub fn contains_vertex(&self, id: NodeId) -> bool {
+    pub fn has_vertex(&self, id: NodeId) -> bool {
         self.vertices.contains_key(&id)
     }
 
     /// Create a link between two sockets on two nodes.
     /// Returns `Err` if creating this link would cause a cycle.
-    pub fn insert_link(&mut self, link: NodeLinkId) -> Result<(), WouldCycle> {
+    pub fn insert_edge(&mut self, link: NodeLinkId) -> Result<(), WouldCycle> {
         todo!()
     }
 
     /// Removes a link from the graph.
-    pub fn remove_link(&mut self, link: NodeLinkId) {
+    pub fn remove_edge(&mut self, link: NodeLinkId) {
         todo!()
     }
 
@@ -174,7 +168,7 @@ impl<V, E> HashGraph<V, E> {
     }
 
     /// Counts the number of links across all edge sets.
-    pub fn link_count(&self) -> usize {
+    pub fn edge_count(&self) -> usize {
         self.iter_edge_sets().map(|v| v.count()).sum()
     }
 }
@@ -185,6 +179,65 @@ impl<V: Debug, E: Debug> Debug for HashGraph<V, E> {
         .field("vertices", &self.vertices)
         .field("edges", &self.edges)
         .finish()
+    }
+}
+
+impl<V: Node, E> Graph for HashGraph<V, E> {
+    type N = V;
+
+    #[inline]
+    fn insert_node(&mut self, node: impl Into<Self::N>) -> NodeId {
+        self.insert_vertex(node.into())
+    }
+
+    #[inline]
+    fn remove_node(&mut self, id: NodeId) -> Option<Self::N> {
+        self.remove_vertex(id).map(|(v, _)| v)
+    }
+
+    #[inline]
+    fn has_node(&self, id: NodeId) -> bool {
+        self.has_vertex(id)
+    }
+
+    #[inline]
+    fn get_node(&self, id: NodeId) -> Option<NodeRef<Self::N>> {
+        self.get_vertex(id).map(|v| NodeRef::from(&v.item))
+    }
+
+    #[inline]
+    fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut<Self::N>> {
+        self.get_vertex_mut(id).map(|v| NodeMut::from(&mut v.item))
+    }
+
+    #[inline]
+    fn node_count(&self) -> Option<usize> {
+        Some(self.vertex_count())
+    }
+
+    fn insert_link(&mut self, link: NodeLinkId) -> Result<(), WouldCycle> {
+        self.insert_edge(link)
+    }
+
+    fn remove_link(&mut self, link: NodeLinkId) {
+        self.remove_edge(link)
+    }
+
+    fn has_link(&self, link: NodeLinkId) -> bool {
+        todo!()
+    }
+
+    #[inline]
+    fn link_count(&self) -> Option<usize> {
+        Some(self.edge_count())
+    }
+
+    fn solve_node(
+        &mut self,
+        node: NodeId,
+        outputs: OutputMask,
+    ) -> Result<SocketValues, GraphSolveError> {
+        todo!()
     }
 }
 

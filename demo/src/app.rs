@@ -1,14 +1,14 @@
 use eframe::egui;
 use egui::Widget;
-use noodle_bowl::simple::SimpleGraph;
-use noodle_egui::graphview::GraphViewBuilder;
+// use noodle_bowl::simple::SimpleGraph;
+// use noodle_egui::graphview::GraphViewBuilder;
 use crate::{nodes::LocalNode, settings::AppSettings};
 
 pub(super) struct DemoApp {
     pub settings: AppSettings,
     show_settings: bool,
 
-    pub graph: SimpleGraph<LocalNode>,
+    // pub graph: SimpleGraph<LocalNode>,
 }
 
 impl eframe::App for DemoApp {
@@ -31,9 +31,9 @@ impl eframe::App for DemoApp {
         }
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            GraphViewBuilder::<&_, LocalNode>::new(&self.graph)
-                .direction(self.settings.graph_direction)
-                .ui(ui)
+            // GraphViewBuilder::<&_, LocalNode>::new(&self.graph)
+            //     .direction(self.settings.graph_direction)
+            //     .ui(ui)
         });
     }
 }
@@ -44,7 +44,7 @@ impl Default for DemoApp {
             settings: AppSettings::default(),
             show_settings: false,
 
-            graph: SimpleGraph::default(),
+            // graph: SimpleGraph::default(),
         }
     }
 }

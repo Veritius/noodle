@@ -10,5 +10,6 @@ extern crate alloc;
 // Re-exports
 pub use noodle_core;
 
-pub mod hashgraph;
-pub mod simple;
+mod hashgraph;
+
+pub use hashgraph::HashGraph;
