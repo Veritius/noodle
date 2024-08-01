@@ -4,12 +4,12 @@ use core::fmt::Debug;
 use std::marker::PhantomData;
 use hashbrown::HashMap;
 use noodle_core::*;
-use crate::{Link, Links, Vertex};
+use crate::{visited::Visited, Link, Links, Vertex};
 
 /// A simple directed acyclic graph structure based on a [`HashMap`].
-pub struct HashGraph<N, VM = (), EM = ()> {
+pub struct HashGraph<N, NM = (), EM = ()> {
     last_idx: u32,
-    vertices: HashMap<NodeId, Vertex<N, VM>>,
+    vertices: HashMap<NodeId, Vertex<N, NM>>,
     links: HashMap<[NodeId; 2], Links<EM>>,
 }
 
@@ -247,107 +247,44 @@ impl<E> Iterator for SeveredLinks<'_, E> {
     }
 }
 
-// struct Dfs {
-//     stack: Vec<NodeId>,
-//     discovered: Visited,
-// }
+/// A depth-first-search implementation for [`HashGraph`].
+pub struct HashGraphDfs<N, NM, EM> {
+    stack: Vec<NodeId>,
+    discovered: Visited,
 
-// impl Dfs {
-//     fn new<V, E>(graph: &HashGraph<V, E>, start: NodeId) -> Self {
-//         let mut stack = Vec::with_capacity(1);
-//         stack.push(start);
+    _p1: PhantomData<(N, NM, EM)>,
+}
 
-//         Self {
-//             stack,
-//             discovered: Visited::new(),
-//         }
-//     }
+impl<N, NM, EM> HashGraphDfs<N, NM, EM> {
+    fn new(graph: &HashGraph<N, NM, EM>, start: NodeId) -> Self {
+        let mut stack = Vec::with_capacity(1);
+        stack.push(start);
 
-//     fn next<V, E>(&mut self, graph: &HashGraph<V, E>) -> Option<NodeId> {
-//         while let Some(node) = self.stack.pop() {
-//             if self.discovered.visit(node) {
-//                 for next in graph.iter_direct_dependencies(node) {
-//                     if !self.discovered.is_visited(next) {
-//                         self.stack.push(next);
-//                     }
-//                 }
+        Self {
+            stack,
+            discovered: Visited::new(),
 
-//                 return Some(node);
-//             }
-//         }
+            _p1: PhantomData,
+        }
+    }
+}
 
-//         return None;
-//     }
+impl<N, NM, EM> Walker for HashGraphDfs<N, NM, EM> {
+    type Context<'a> = &'a HashGraph<N, NM, EM> where N: 'a, NM: 'a, EM: 'a;
 
-//     fn into_iter<V, E>(self, graph: &HashGraph<V, E>) -> DfsIter<'_, V, E> {
-//         DfsIter { graph, state: self }
-//     }
-// }
+    fn next(&mut self, graph: Self::Context<'_>) -> Option<NodeId> {
+        while let Some(node) = self.stack.pop() {
+            if self.discovered.visit(node) {
+                for next in graph.iter_direct_dependencies(node) {
+                    if !self.discovered.is_visited(next) {
+                        self.stack.push(next);
+                    }
+                }
 
-// struct DfsIter<'a, V, E> {
-//     graph: &'a HashGraph<V, E>,
-//     state: Dfs,
-// }
+                return Some(node);
+            }
+        }
 
-// impl<'a, V, E> Iterator for DfsIter<'a, V, E> {
-//     type Item = NodeId;
-
-//     fn next(&mut self) -> Option<Self::Item> {
-//         self.state.next(self.graph)
-//     }
-// }
-
-// struct DfsPostOrder {
-//     stack: Vec<NodeId>,
-//     discovered: Visited,
-//     finished: Visited,
-// }
-
-// impl DfsPostOrder {
-//     fn new<V, E>(graph: &HashGraph<V, E>, start: NodeId) -> Self {
-//         let mut stack = Vec::with_capacity(1);
-//         stack.push(start);
-
-//         Self {
-//             stack,
-//             discovered: Visited::new(),
-//             finished: Visited::new(),
-//         }
-//     }
-
-//     fn next<V, E>(&mut self, graph: &HashGraph<V, E>) -> Option<NodeId> {
-//         while let Some(next) = self.stack.last().cloned() {
-//             if self.discovered.visit(next) {
-//                 for sp in graph.iter_direct_dependencies(next) {
-//                     if !self.discovered.is_visited(sp) {
-//                         self.stack.push(sp);
-//                     }
-//                 }
-//             } else {
-//                 self.stack.pop();
-//                 if self.finished.visit(next) {
-//                     return Some(next);
-//                 }
-//             }
-//         }
-
-//         return None;
-//     }
-
-//     fn into_iter<V, E>(self, graph: &HashGraph<V, E>) -> DfsPostOrderIter<'_, V, E> {
-//         DfsPostOrderIter { graph, state: self }
-//     }
-// }
-
-// struct DfsPostOrderIter<'a, V, E> {
-//     graph: &'a HashGraph<V, E>,
-//     state: DfsPostOrder,
-// }
-
-// impl<'a, V, E> Iterator for DfsPostOrderIter<'a, V, E> {
-//     type Item = NodeId;
-
-//     fn next(&mut self) -> Option<Self::Item> {
-//         self.state.next(self.graph)
-//     }
-// }
+        return None;
+    }
+}

@@ -39,8 +39,8 @@ pub trait WalkDirectDependents: Graph {
 /// A traversal state that doesn't keep a borrow of the graph, permitting mutable access to the graph.
 pub trait Walker {
     /// Context given to [`next`](Walker::next) to progress.
-    type Context;
+    type Context<'a> where Self: 'a;
 
     /// Walks to the next node in the graph.
-    fn next(&mut self, graph: Self::Context) -> Option<NodeId>;
+    fn next<'a>(&'a mut self, graph: Self::Context<'a>) -> Option<NodeId>;
 }
