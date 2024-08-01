@@ -65,32 +65,3 @@ pub trait Graph<N: Node> {
         outputs: OutputMask,
     ) -> Result<SocketValues, GraphSolveError>;
 }
-
-/// A traversal state that doesn't keep a borrow of the graph, permitting mutable access to the graph.
-pub trait Walker<G, N>
-where
-    G: Graph<N> + ?Sized,
-    N: Node,
-{
-    fn next(&mut self, graph: &G) -> Option<NodeId>;
-}
-
-pub trait WalkDependencies<N>
-where
-    Self: Graph<N>,
-    N: Node,
-{
-    type Walker: Walker<Self, N>;
-
-    fn walk_dependencies(&self, from: NodeId) -> Option<Self::Walker>;
-}
-
-pub trait WalkDependents<N>
-where
-    Self: Graph<N>,
-    N: Node,
-{
-    type Walker: Walker<Self, N>;
-
-    fn walk_dependents(&self, from: NodeId) -> Option<Self::Walker>;
-}
