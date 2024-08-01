@@ -1,7 +1,6 @@
 //! Widgets for displaying [`Graph`] objects.
 
 use std::marker::PhantomData;
-
 use egui::{Color32, Direction, LayerId, Rect, Response, Rounding, Sense, Vec2, Widget};
 use noodle_core::*;
 
