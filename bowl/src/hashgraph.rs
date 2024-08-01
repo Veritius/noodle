@@ -250,7 +250,7 @@ impl<E> Iterator for SeveredLinks<'_, E> {
 
 impl<N, NM, EM> WalkDependencies for HashGraph<N, NM, EM>
 where
-    HashGraph<N, NM, EM>: Graph,
+    HashGraph<N, NM, EM>: WalkDirectDependencies,
 {
     type Walker = HashGraphWalkDependencies<N, NM, EM>;
 
@@ -341,7 +341,7 @@ impl<N, NM, EM> Walker for HashGraphWalkDirectDependencies<N, NM, EM> {
 
 impl<N, NM, EM> WalkDependents for HashGraph<N, NM, EM>
 where
-    HashGraph<N, NM, EM>: Graph,
+    HashGraph<N, NM, EM>: WalkDirectDependents,
 {
     type Walker = HashGraphWalkDependents<N, NM, EM>;
 
