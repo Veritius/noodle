@@ -138,7 +138,7 @@ impl<G, N> GraphViewBuilder<G, N> {
     }
 }
 
-impl<'a, G: Graph<N>, N: Node> Widget for GraphViewBuilder<&'a G, N> {
+impl<'a, G: Graph<N = N>, N: Node> Widget for GraphViewBuilder<&'a G, N> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         let (rect, bg_response) = layout_view_rect(ui, self.max_size);
         let painter = ui.painter().clone()
@@ -151,7 +151,7 @@ impl<'a, G: Graph<N>, N: Node> Widget for GraphViewBuilder<&'a G, N> {
     }
 }
 
-impl<'a, G: Graph<N>, N: Node> Widget for GraphViewBuilder<&'a mut G, N> {
+impl<'a, G: Graph<N = N>, N: Node> Widget for GraphViewBuilder<&'a mut G, N> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         todo!()
     }
