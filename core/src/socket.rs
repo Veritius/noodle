@@ -182,13 +182,13 @@ impl Eq for SocketValue {}
 
 impl PartialOrd for SocketValue {
     #[inline(always)]
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
 
 impl Ord for SocketValue {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         self.id.cmp(&other.id)
     }
 }
