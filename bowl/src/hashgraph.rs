@@ -5,13 +5,13 @@ use noodle_core::*;
 use smallvec::SmallVec;
 
 /// A simple directed acyclic graph structure based on a [`HashMap`].
-pub struct HashGraph<V, E = ()> {
+pub struct HashGraph<N, VM = (), EM = ()> {
     last_idx: u32,
-    vertices: HashMap<NodeId, Vertex<V>>,
-    edges: HashMap<[NodeId; 2], Edges<E>>,
+    vertices: HashMap<NodeId, Vertex<N, VM>>,
+    edges: HashMap<[NodeId; 2], Edges<EM>>,
 }
 
-impl<V, E> Default for HashGraph<V, E> {
+impl<V, VM, EM> Default for HashGraph<V, VM, EM> {
     fn default() -> Self {
         Self {
             last_idx: 0,
@@ -21,7 +21,7 @@ impl<V, E> Default for HashGraph<V, E> {
     }
 }
 
-impl<V, E> HashGraph<V, E> {
+impl<V, VM, EM> HashGraph<V, VM, EM> {
     #[inline]
     fn next_node_id(&mut self) -> NodeId {
         let v = self.last_idx;
@@ -30,19 +30,17 @@ impl<V, E> HashGraph<V, E> {
     }
 
     /// Inserts a vertex into the graph.
-    pub fn insert_vertex(&mut self, vertex: V) -> NodeId {
+    pub fn insert_vertex(&mut self, vertex: Vertex<V, VM>) -> NodeId {
         let id = self.next_node_id();
 
-        self.vertices.insert(id, Vertex {
-            item: vertex
-        });
+        self.vertices.insert(id, vertex);
 
         return id;
     }
 
     /// Removes a vertex from the graph, severing any links.
     /// Returns an iterator over links that were severed.
-    pub fn remove_vertex(&mut self, vertex: NodeId) -> Option<(V, SeveredLinks<E>)> {
+    pub fn remove_vertex(&mut self, vertex: NodeId) -> Option<(V, SeveredLinks<EM>)> {
         // We can early return if the vertex doesn't exist,
         // since that means there are no links to it
         let vtx = self.vertices.remove(&vertex)?;
@@ -76,13 +74,13 @@ impl<V, E> HashGraph<V, E> {
 
     /// Immutably borrows a vertex from the graph.
     #[inline]
-    pub fn get_vertex(&self, vertex: NodeId) -> Option<&Vertex<V>> {
+    pub fn get_vertex(&self, vertex: NodeId) -> Option<&Vertex<V, VM>> {
         self.vertices.get(&vertex)
     }
 
     /// Mutably borrows a vertex from the graph.
     #[inline]
-    pub fn get_vertex_mut(&mut self, vertex: NodeId) -> Option<&mut Vertex<V>> {
+    pub fn get_vertex_mut(&mut self, vertex: NodeId) -> Option<&mut Vertex<V, VM>> {
         self.vertices.get_mut(&vertex)
     }
 
@@ -111,34 +109,23 @@ impl<V, E> HashGraph<V, E> {
 
     /// Borrow [`Edges`] if it exists.
     #[inline]
-    pub fn get_edges(&self, left: NodeId, right: NodeId) -> Option<&Edges<E>> {
+    pub fn get_edges(&self, left: NodeId, right: NodeId) -> Option<&Edges<EM>> {
         self.edges.get(&[left, right])
     }
 
     /// Mutably borrow [`Edges`] if it exists.
     #[inline]
-    pub fn get_edges_mut(&mut self, left: NodeId, right: NodeId) -> Option<&mut Edges<E>> {
+    pub fn get_edges_mut(&mut self, left: NodeId, right: NodeId) -> Option<&mut Edges<EM>> {
         self.edges.get_mut(&[left, right])
     }
 
     /// Mutably borrow, or try to create, an [`Edges`].
     /// If the edge does not exist, and creating it would create a cycle, this returns an error.
-    pub fn get_or_insert_edges(&mut self, left: NodeId, right: NodeId) -> Result<&mut Edges<E>, WouldCycle> {
+    pub fn get_or_insert_edges(&mut self, left: NodeId, right: NodeId) -> Result<&mut Edges<EM>, WouldCycle> {
         // If it exists, return it as per usual.
         if let Some(edges) = self.get_edges_mut(left, right) { return Ok(edges); }
 
         todo!()
-    }
-
-    /// Recursively iterates over the dependencies of `node`, returning them as they're discovered.
-    /// If you don't want to recurse, use [`iter_direct_dependencies`](Self::iter_direct_dependencies).
-    pub fn iter_dependencies(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
-        Dfs::new(self, node).into_iter(self)
-    }
-
-    /// Recursively iterates over the dependencies of `node`, returning dependencies first.
-    pub fn iter_dependencies_postorder(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
-        DfsPostOrder::new(self, node).into_iter(self)
     }
 
     /// Iterates over the direct dependencies of `node`. Does not recurse.
@@ -148,22 +135,9 @@ impl<V, E> HashGraph<V, E> {
             .map(|([l, _], _)| *l)
     }
 
-    /// Recursively iterates over the nodes dependent on `node`.
-    /// If you don't want to recurse, use [`iter_direct_dependents`](Self::iter_direct_dependents).
-    pub fn iter_dependents(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
-        return [].iter().cloned() // TODO
-    }
-
-    /// Iterates over the nodes directly dependent on `node`. Does not recurse.
-    pub fn iter_direct_dependents(&self, node: NodeId) -> impl Iterator<Item = NodeId> + '_ {
-        self.edges.iter()
-            .filter(move |([l, _], _)| *l == node)
-            .map(|([_, r], _)| *r)
-    }
-
     /// Returns an iterator over all [`Edges`] items in the graph.
     #[inline]
-    pub fn iter_edge_sets(&self) -> impl Iterator<Item = &Edges<E>> {
+    pub fn iter_edge_sets(&self) -> impl Iterator<Item = &Edges<EM>> {
         self.edges.values()
     }
 
@@ -187,7 +161,10 @@ impl<V: Node, E> Graph for HashGraph<V, E> {
 
     #[inline]
     fn insert_node(&mut self, node: impl Into<Self::N>) -> NodeId {
-        self.insert_vertex(node.into())
+        self.insert_vertex(Vertex {
+            item: node.into(),
+            meta: None,
+        })
     }
 
     #[inline]
@@ -242,11 +219,12 @@ impl<V: Node, E> Graph for HashGraph<V, E> {
 }
 
 /// A vertex entry in a [`HashGraph`].
-pub struct Vertex<V> {
-    item: V,
+pub struct Vertex<V, VM> {
+    pub item: V,
+    pub meta: Option<VM>,
 }
 
-impl<V> Deref for Vertex<V> {
+impl<V, VM> Deref for Vertex<V, VM> {
     type Target = V;
 
     fn deref(&self) -> &Self::Target {
@@ -254,13 +232,17 @@ impl<V> Deref for Vertex<V> {
     }
 }
 
-impl<V> DerefMut for Vertex<V> {
+impl<V, VM> DerefMut for Vertex<V, VM> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.item
     }
 }
 
-impl<V: Debug> Debug for Vertex<V> {
+impl<V, VM> Debug for Vertex<V, VM>
+where
+    V: Debug,
+    VM: Debug,
+{
     #[inline]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         self.item.fmt(f)
@@ -323,7 +305,7 @@ impl<E: Debug> Debug for EdgeItem<E> {
 }
 
 /// An iterator over links severed by [`remove_vertex`](HashGraph::remove_vertex) and related functions.
-pub struct SeveredLinks<'a, Edge> {
+pub struct SeveredLinks<'a, EdgeMeta> {
     index: usize,
     items: Box<[NodeLinkId]>,
 
@@ -332,7 +314,7 @@ pub struct SeveredLinks<'a, Edge> {
     // internals of this iterator without
     // needing to make breaking changes
     _p1: PhantomData<&'a ()>,
-    _p2: PhantomData<Edge>,
+    _p2: PhantomData<EdgeMeta>,
 }
 
 impl<E> Iterator for SeveredLinks<'_, E> {
