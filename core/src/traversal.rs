@@ -42,5 +42,5 @@ pub trait Walker {
     type Context<'a> where Self: 'a;
 
     /// Walks to the next node in the graph.
-    fn next<'a>(&'a mut self, graph: Self::Context<'a>) -> Option<NodeId>;
+    fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId>;
 }

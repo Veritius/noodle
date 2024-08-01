@@ -247,6 +247,54 @@ impl<E> Iterator for SeveredLinks<'_, E> {
     }
 }
 
+impl<N, NM, EM> WalkDirectDependencies for HashGraph<N, NM, EM>
+where
+    HashGraph<N, NM, EM>: Graph,
+{
+    type Walker = HashGraphWalkDirectDependencies<N, NM, EM>;
+
+    fn walk_direct_dependencies(&self, node: NodeId) -> Option<Self::Walker> {
+        todo!()
+    }
+}
+
+/// A walker over a node's direct dependencies, from a [`HashGraph`].
+pub struct HashGraphWalkDirectDependencies<N, NM, EM> {
+    _p1: PhantomData<(N, NM, EM)>,
+}
+
+impl<N, NM, EM> Walker for HashGraphWalkDirectDependencies<N, NM, EM> {
+    type Context<'a> = () where Self: 'a;
+
+    fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
+        todo!()
+    }
+}
+
+impl<N, NM, EM> WalkDirectDependents for HashGraph<N, NM, EM>
+where
+    HashGraph<N, NM, EM>: Graph,
+{
+    type Walker = HashGraphWalkDirectDependencies<N, NM, EM>;
+
+    fn walk_direct_dependents(&self, node: NodeId) -> Option<Self::Walker> {
+        todo!()
+    }
+}
+
+/// A walker over nodes directly dependent on a node, from a [`HashGraph`].
+pub struct HashGraphWalkDirectDependents<N, NM, EM> {
+    _p1: PhantomData<(N, NM, EM)>,
+}
+
+impl<N, NM, EM> Walker for HashGraphWalkDirectDependents<N, NM, EM> {
+    type Context<'a> = () where Self: 'a;
+
+    fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
+        todo!()
+    }
+}
+
 /// A depth-first-search implementation for [`HashGraph`].
 pub struct HashGraphDfs<N, NM, EM> {
     stack: Vec<NodeId>,
@@ -272,7 +320,7 @@ impl<N, NM, EM> HashGraphDfs<N, NM, EM> {
 impl<N, NM, EM> Walker for HashGraphDfs<N, NM, EM> {
     type Context<'a> = &'a HashGraph<N, NM, EM> where N: 'a, NM: 'a, EM: 'a;
 
-    fn next(&mut self, graph: Self::Context<'_>) -> Option<NodeId> {
+    fn next<'a>(&'a mut self, graph: Self::Context<'a>) -> Option<NodeId> {
         while let Some(node) = self.stack.pop() {
             if self.discovered.visit(node) {
                 for next in graph.iter_direct_dependencies(node) {
