@@ -11,11 +11,20 @@ use smallvec::SmallVec;
 /// This is an internal type and does not implement the [`Graph`](noodle_core::Graph) trait.
 /// You may get better use out of higher level types that do implement [`Graph`].
 /// This is still exposed for the use of advanced users.
-#[derive(Default)]
 pub struct HashGraph<V, E = ()> {
     last_idx: u32,
     vertices: HashMap<NodeId, Vertex<V>>,
     edges: HashMap<[NodeId; 2], Edges<E>>,
+}
+
+impl<V, E> Default for HashGraph<V, E> {
+    fn default() -> Self {
+        Self {
+            last_idx: 0,
+            vertices: HashMap::default(),
+            edges: HashMap::default(),
+        }
+    }
 }
 
 impl<V, E> HashGraph<V, E> {

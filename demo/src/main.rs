@@ -3,6 +3,7 @@
 #![warn(missing_docs)]
 
 mod app;
+mod nodes;
 mod settings;
 
 fn main() -> eframe::Result {

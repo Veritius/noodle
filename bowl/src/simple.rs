@@ -8,6 +8,14 @@ pub struct SimpleGraph<N> {
     graph: HashGraph<N>,
 }
 
+impl<N> Default for SimpleGraph<N> {
+    fn default() -> Self {
+        Self {
+            graph: HashGraph::default(),
+        }
+    }
+}
+
 impl<N: Node> Graph<N> for SimpleGraph<N> {
     #[inline]
     fn insert_node(&mut self, node: impl Into<N>) -> NodeId {

@@ -44,6 +44,40 @@ pub trait Node {
     fn changed_since_last_run(&self) -> bool;
 }
 
+impl Node for Box<dyn Node> {
+    #[inline]
+    fn discriminator(&self) -> &str {
+        self.deref().discriminator()
+    }
+
+    #[inline]
+    fn input_sockets(&self) -> SocketSet {
+        self.deref().input_sockets()
+    }
+
+    #[inline]
+    fn output_sockets(&self) -> SocketSet {
+        self.deref().output_sockets()
+    }
+
+    #[inline]
+    fn execute(
+        &self,
+        values: SocketValues,
+        mask: OutputMask,
+    ) -> Result<SocketValues, NodeExecutionError> {
+        self.deref().execute(
+            values,
+            mask,
+        )
+    }
+
+    #[inline]
+    fn changed_since_last_run(&self) -> bool {
+        self.deref().changed_since_last_run()
+    }
+}
+
 /// A reference to a [`Node`] object.
 pub struct NodeRef<'a, N: Node + 'a> {
     inner: &'a N,
