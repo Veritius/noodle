@@ -233,47 +233,19 @@ pub struct SeveredLinks<'a, EdgeMeta> {
     _p2: PhantomData<EdgeMeta>,
 }
 
-// impl<E> Iterator for SeveredLinks<'_, E> {
-//     type Item = NodeLinkId;
+impl<E> Iterator for SeveredLinks<'_, E> {
+    type Item = NodeLinkId;
 
-//     fn next(&mut self) -> Option<Self::Item> {
-//         // Check if we've reached the end of the items
-//         if self.index == self.items.len() { return None }
+    fn next(&mut self) -> Option<Self::Item> {
+        // Check if we've reached the end of the items
+        if self.index == self.items.len() { return None }
 
-//         let item = self.items[self.index];
-//         self.index += 1; // keep track of where we're at
+        let item = self.items[self.index];
+        self.index += 1; // keep track of where we're at
 
-//         return Some(item);
-//     }
-// }
-
-// struct Visited(Vec<NodeId>);
-
-// impl Visited {
-//     fn new() -> Self {
-//         Self(Vec::new())
-//     }
-
-//     fn with_capacity(amt: usize) -> Self {
-//         Self(Vec::with_capacity(amt))
-//     }
-
-//     fn visit(&mut self, id: NodeId) -> bool {
-//         match self.0.binary_search(&id) {
-//             Ok(_) => { return false },
-
-//             Err(idx) => {
-//                 self.0.insert(idx, id);
-//                 return true;
-//             },
-//         }
-//     }
-
-//     #[inline]
-//     fn is_visited(&self, id: NodeId) -> bool {
-//         self.0.binary_search(&id).is_ok()
-//     }
-// }
+        return Some(item);
+    }
+}
 
 // struct Dfs {
 //     stack: Vec<NodeId>,

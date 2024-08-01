@@ -12,6 +12,7 @@ pub use noodle_core;
 
 mod link;
 mod vertex;
+mod visited;
 
 // Public modules
 pub mod hashgraph;
