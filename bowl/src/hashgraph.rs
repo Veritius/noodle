@@ -346,7 +346,17 @@ where
     type Walker = HashGraphWalkDependents<N, NM, EM>;
 
     fn walk_dependents(&self, node: NodeId) -> Option<Self::Walker> {
-        todo!()
+        if !self.has_node(node) { return None }
+
+        let mut stack = Vec::with_capacity(1);
+        stack.push(node);
+
+        return Some(Self::Walker {
+            stack,
+            discovered: Visited::new(),
+
+            _p1: PhantomData,
+        });
     }
 }
 
