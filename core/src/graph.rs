@@ -1,21 +1,24 @@
 use super::*;
 
 /// A directed acyclic graph structure.
-pub trait Graph<N: Node> {
+pub trait Graph {
+    /// The internal node value.
+    type N: Node;
+
     /// Add a node to the graph.
-    fn insert_node(&mut self, node: impl Into<N>) -> NodeId;
+    fn insert_node(&mut self, node: impl Into<Self::N>) -> NodeId;
 
     /// Remove a node from the graph, breaking any links.
-    fn remove_node(&mut self, id: NodeId) -> Option<N>;
+    fn remove_node(&mut self, id: NodeId) -> Option<Self::N>;
 
     /// Check if the node is present.
     fn has_node(&self, id: NodeId) -> bool;
 
     /// Immutably access a node by its ID.
-    fn get_node(&self, id: NodeId) -> Option<NodeRef<N>>;
+    fn get_node(&self, id: NodeId) -> Option<NodeRef<Self::N>>;
 
     /// Mutably access a node by its ID.
-    fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut<N>>;
+    fn get_node_mut(&mut self, id: NodeId) -> Option<NodeMut<Self::N>>;
 
     /// Returns the number of nodes the graph contains.
     /// Returns `None` if an estimate cannot be obtained.

@@ -16,7 +16,9 @@ impl<N> Default for SimpleGraph<N> {
     }
 }
 
-impl<N: Node> Graph<N> for SimpleGraph<N> {
+impl<N: Node> Graph for SimpleGraph<N> {
+    type N = N;
+
     #[inline]
     fn insert_node(&mut self, node: impl Into<N>) -> NodeId {
         self.graph.insert_vertex(node.into())

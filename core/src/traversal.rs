@@ -1,11 +1,7 @@
 use crate::*;
 
 /// Returns a [`Walker`] over the dependencies of a given node.
-pub trait WalkDependencies<N>
-where
-    Self: Graph<N>,
-    N: Node,
-{
+pub trait WalkDependencies: Graph {
     /// The returned walker.
     type Walker: Walker;
 
@@ -14,11 +10,7 @@ where
 }
 
 /// Returns a [`Walker`] over the nodes dependent on a given node.
-pub trait WalkDependents<N>
-where
-    Self: Graph<N>,
-    N: Node,
-{
+pub trait WalkDependents: Graph {
     /// The returned walker.
     type Walker: Walker;
 
