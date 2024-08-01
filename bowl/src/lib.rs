@@ -10,6 +10,13 @@ extern crate alloc;
 // Re-exports
 pub use noodle_core;
 
-mod hashgraph;
+mod link;
+mod vertex;
 
+// Public modules
+pub mod hashgraph;
+
+// Public exports
 pub use hashgraph::HashGraph;
+pub use link::{Link, Links};
+pub use vertex::Vertex;
