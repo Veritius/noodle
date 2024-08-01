@@ -279,12 +279,13 @@ where
     type Walker = HashGraphWalkDirectDependencies<N, NM, EM>;
 
     fn walk_direct_dependencies(&self, node: NodeId) -> Option<Self::Walker> {
-        let set = self.links.iter()
+        let mut set = self.links.iter()
             .filter(move |([_, r], _)| *r == node)
             .map(|([l, _], _)| *l)
             .collect::<SmallVec<[NodeId; 4]>>();
 
         if set.len() == 0 { return None }
+        set.reverse();
 
         return Some(Self::Walker {
             set,
@@ -302,9 +303,9 @@ pub struct HashGraphWalkDirectDependencies<N, NM, EM> {
 impl<N, NM, EM> Walker for HashGraphWalkDirectDependencies<N, NM, EM> {
     type Context<'a> = () where Self: 'a;
 
+    #[inline]
     fn next<'a>(&'a mut self, _context: Self::Context<'a>) -> Option<NodeId> {
-        if self.set.len() == 0 { return None }
-        return Some(self.set.remove(1));
+        self.set.pop()
     }
 }
 
@@ -339,12 +340,13 @@ where
     type Walker = HashGraphWalkDirectDependents<N, NM, EM>;
 
     fn walk_direct_dependents(&self, node: NodeId) -> Option<Self::Walker> {
-        let set = self.links.iter()
+        let mut set = self.links.iter()
             .filter(move |([l, _], _)| *l == node)
             .map(|([_, r], _)| *r)
             .collect::<SmallVec<[NodeId; 4]>>();
 
         if set.len() == 0 { return None }
+        set.reverse();
 
         return Some(Self::Walker {
             set,
@@ -362,9 +364,9 @@ pub struct HashGraphWalkDirectDependents<N, NM, EM> {
 impl<N, NM, EM> Walker for HashGraphWalkDirectDependents<N, NM, EM> {
     type Context<'a> = () where Self: 'a;
 
+    #[inline]
     fn next<'a>(&'a mut self, _context: Self::Context<'a>) -> Option<NodeId> {
-        if self.set.len() == 0 { return None }
-        return Some(self.set.remove(1));
+        self.set.pop()
     }
 }
 
