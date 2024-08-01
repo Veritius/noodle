@@ -4,6 +4,7 @@ use core::fmt::Debug;
 use std::marker::PhantomData;
 use hashbrown::HashMap;
 use noodle_core::*;
+use smallvec::SmallVec;
 use crate::{visited::Visited, Link, Links, Vertex};
 
 /// A simple directed acyclic graph structure based on a [`HashMap`].
@@ -278,20 +279,32 @@ where
     type Walker = HashGraphWalkDirectDependencies<N, NM, EM>;
 
     fn walk_direct_dependencies(&self, node: NodeId) -> Option<Self::Walker> {
-        todo!()
+        let set = self.links.iter()
+            .filter(move |([_, r], _)| *r == node)
+            .map(|([l, _], _)| *l)
+            .collect::<SmallVec<[NodeId; 4]>>();
+
+        if set.len() == 0 { return None }
+
+        return Some(Self::Walker {
+            set,
+            _p1: PhantomData,
+        });
     }
 }
 
 /// A walker over a node's direct dependencies, from a [`HashGraph`].
 pub struct HashGraphWalkDirectDependencies<N, NM, EM> {
+    set: SmallVec<[NodeId; 4]>,
     _p1: PhantomData<(N, NM, EM)>,
 }
 
 impl<N, NM, EM> Walker for HashGraphWalkDirectDependencies<N, NM, EM> {
     type Context<'a> = () where Self: 'a;
 
-    fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
-        todo!()
+    fn next<'a>(&'a mut self, _context: Self::Context<'a>) -> Option<NodeId> {
+        if self.set.len() == 0 { return None }
+        return Some(self.set.remove(1));
     }
 }
 
@@ -323,23 +336,35 @@ impl<N, NM, EM> WalkDirectDependents for HashGraph<N, NM, EM>
 where
     HashGraph<N, NM, EM>: Graph,
 {
-    type Walker = HashGraphWalkDirectDependencies<N, NM, EM>;
+    type Walker = HashGraphWalkDirectDependents<N, NM, EM>;
 
     fn walk_direct_dependents(&self, node: NodeId) -> Option<Self::Walker> {
-        todo!()
+        let set = self.links.iter()
+            .filter(move |([l, _], _)| *l == node)
+            .map(|([_, r], _)| *r)
+            .collect::<SmallVec<[NodeId; 4]>>();
+
+        if set.len() == 0 { return None }
+
+        return Some(Self::Walker {
+            set,
+            _p1: PhantomData,
+        });
     }
 }
 
 /// A walker over nodes directly dependent on a node, from a [`HashGraph`].
 pub struct HashGraphWalkDirectDependents<N, NM, EM> {
+    set: SmallVec<[NodeId; 4]>,
     _p1: PhantomData<(N, NM, EM)>,
 }
 
 impl<N, NM, EM> Walker for HashGraphWalkDirectDependents<N, NM, EM> {
     type Context<'a> = () where Self: 'a;
 
-    fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
-        todo!()
+    fn next<'a>(&'a mut self, _context: Self::Context<'a>) -> Option<NodeId> {
+        if self.set.len() == 0 { return None }
+        return Some(self.set.remove(1));
     }
 }
 
