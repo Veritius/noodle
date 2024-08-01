@@ -4,12 +4,14 @@
 #![warn(missing_docs)]
 
 mod errors;
+mod factory;
 mod graph;
 mod node;
 mod socket;
 mod value;
 
 pub use errors::*;
+pub use factory::*;
 pub use graph::*;
 pub use node::*;
 pub use socket::*;
