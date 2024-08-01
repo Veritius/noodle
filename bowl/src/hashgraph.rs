@@ -248,59 +248,59 @@ impl<E> Iterator for SeveredLinks<'_, E> {
     }
 }
 
-impl<N, NM, EM> WalkDependencies for HashGraph<N, NM, EM>
-where
-    HashGraph<N, NM, EM>: WalkDirectDependencies,
-{
-    type Walker = HashGraphWalkDependencies<N, NM, EM>;
+// impl<N, NM, EM> WalkDependencies for HashGraph<N, NM, EM>
+// where
+//     HashGraph<N, NM, EM>: WalkDirectDependencies,
+// {
+//     type Walker = HashGraphWalkDependencies<N, NM, EM>;
 
-    fn walk_dependencies(&self, node: NodeId) -> Option<Self::Walker> {
-        if !self.has_node(node) { return None }
+//     fn walk_dependencies(&self, node: NodeId) -> Option<Self::Walker> {
+//         if !self.has_node(node) { return None }
 
-        let mut stack = Vec::with_capacity(1);
-        stack.push(node);
+//         let mut stack = Vec::with_capacity(1);
+//         stack.push(node);
 
-        return Some(Self::Walker {
-            stack,
-            discovered: Visited::new(),
+//         return Some(Self::Walker {
+//             stack,
+//             discovered: Visited::new(),
 
-            _p1: PhantomData,
-        });
-    }
-}
+//             _p1: PhantomData,
+//         });
+//     }
+// }
 
-/// A walker over all dependencies of a node, from a [`HashGraph`].
-pub struct HashGraphWalkDependencies<N, NM, EM> {
-    stack: Vec<NodeId>,
-    discovered: Visited,
+// /// A walker over all dependencies of a node, from a [`HashGraph`].
+// pub struct HashGraphWalkDependencies<N, NM, EM> {
+//     stack: Vec<NodeId>,
+//     discovered: Visited,
 
-    _p1: PhantomData<(N, NM, EM)>,
-}
+//     _p1: PhantomData<(N, NM, EM)>,
+// }
 
-impl<N, NM, EM> Walker for HashGraphWalkDependencies<N, NM, EM>
-where
-    HashGraph<N, NM, EM>: WalkDirectDependencies,
-{
-    type Context<'a> = &'a HashGraph<N, NM, EM> where Self: 'a;
+// impl<N, NM, EM> Walker for HashGraphWalkDependencies<N, NM, EM>
+// where
+//     HashGraph<N, NM, EM>: WalkDirectDependencies,
+// {
+//     type Context<'a> = &'a HashGraph<N, NM, EM> where Self: 'a;
 
-    fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
-        while let Some(node) = self.stack.pop() {
-            if self.discovered.visit(node) {
-                let mut walker = context.walk_direct_dependencies(node).unwrap();
+//     fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
+//         while let Some(node) = self.stack.pop() {
+//             if self.discovered.visit(node) {
+//                 let mut walker = context.walk_direct_dependencies(node).unwrap();
 
-                while let Some(next) = walker.next(()) {
-                    if !self.discovered.is_visited(next) {
-                        self.stack.push(next);
-                    }
-                }
+//                 while let Some(next) = walker.next(()) {
+//                     if !self.discovered.is_visited(next) {
+//                         self.stack.push(next);
+//                     }
+//                 }
 
-                return Some(node);
-            }
-        }
+//                 return Some(node);
+//             }
+//         }
 
-        return None;
-    }
-}
+//         return None;
+//     }
+// }
 
 impl<N, NM, EM> WalkDirectDependencies for HashGraph<N, NM, EM>
 where
@@ -339,59 +339,59 @@ impl<N, NM, EM> Walker for HashGraphWalkDirectDependencies<N, NM, EM> {
     }
 }
 
-impl<N, NM, EM> WalkDependents for HashGraph<N, NM, EM>
-where
-    HashGraph<N, NM, EM>: WalkDirectDependents,
-{
-    type Walker = HashGraphWalkDependents<N, NM, EM>;
+// impl<N, NM, EM> WalkDependents for HashGraph<N, NM, EM>
+// where
+//     HashGraph<N, NM, EM>: WalkDirectDependents,
+// {
+//     type Walker = HashGraphWalkDependents<N, NM, EM>;
 
-    fn walk_dependents(&self, node: NodeId) -> Option<Self::Walker> {
-        if !self.has_node(node) { return None }
+//     fn walk_dependents(&self, node: NodeId) -> Option<Self::Walker> {
+//         if !self.has_node(node) { return None }
 
-        let mut stack = Vec::with_capacity(1);
-        stack.push(node);
+//         let mut stack = Vec::with_capacity(1);
+//         stack.push(node);
 
-        return Some(Self::Walker {
-            stack,
-            discovered: Visited::new(),
+//         return Some(Self::Walker {
+//             stack,
+//             discovered: Visited::new(),
 
-            _p1: PhantomData,
-        });
-    }
-}
+//             _p1: PhantomData,
+//         });
+//     }
+// }
 
-/// A walker over all nodes dependent on a given node within a [`HashGraph`].
-pub struct HashGraphWalkDependents<N, NM, EM> {
-    stack: Vec<NodeId>,
-    discovered: Visited,
+// /// A walker over all nodes dependent on a given node within a [`HashGraph`].
+// pub struct HashGraphWalkDependents<N, NM, EM> {
+//     stack: Vec<NodeId>,
+//     discovered: Visited,
 
-    _p1: PhantomData<(N, NM, EM)>,
-}
+//     _p1: PhantomData<(N, NM, EM)>,
+// }
 
-impl<N, NM, EM> Walker for HashGraphWalkDependents<N, NM, EM>
-where
-    HashGraph<N, NM, EM>: WalkDirectDependents,
-{
-    type Context<'a> = &'a HashGraph<N, NM, EM> where Self: 'a;
+// impl<N, NM, EM> Walker for HashGraphWalkDependents<N, NM, EM>
+// where
+//     HashGraph<N, NM, EM>: WalkDirectDependents,
+// {
+//     type Context<'a> = &'a HashGraph<N, NM, EM> where Self: 'a;
 
-    fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
-        while let Some(node) = self.stack.pop() {
-            if self.discovered.visit(node) {
-                let mut walker = context.walk_direct_dependents(node).unwrap();
+//     fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
+//         while let Some(node) = self.stack.pop() {
+//             if self.discovered.visit(node) {
+//                 let mut walker = context.walk_direct_dependents(node).unwrap();
 
-                while let Some(next) = walker.next(()) {
-                    if !self.discovered.is_visited(next) {
-                        self.stack.push(next);
-                    }
-                }
+//                 while let Some(next) = walker.next(()) {
+//                     if !self.discovered.is_visited(next) {
+//                         self.stack.push(next);
+//                     }
+//                 }
 
-                return Some(node);
-            }
-        }
+//                 return Some(node);
+//             }
+//         }
 
-        return None;
-    }
-}
+//         return None;
+//     }
+// }
 
 impl<N, NM, EM> WalkDirectDependents for HashGraph<N, NM, EM>
 where
