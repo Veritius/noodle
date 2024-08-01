@@ -247,6 +247,30 @@ impl<E> Iterator for SeveredLinks<'_, E> {
     }
 }
 
+impl<N, NM, EM> WalkDependencies for HashGraph<N, NM, EM>
+where
+    HashGraph<N, NM, EM>: Graph,
+{
+    type Walker = HashGraphWalkDependencies<N, NM, EM>;
+
+    fn walk_dependencies(&self, node: NodeId) -> Option<Self::Walker> {
+        todo!()
+    }
+}
+
+/// A walker over all dependencies of a node, from a [`HashGraph`].
+pub struct HashGraphWalkDependencies<N, NM, EM> {
+    _p1: PhantomData<(N, NM, EM)>,
+}
+
+impl<N, NM, EM> Walker for HashGraphWalkDependencies<N, NM, EM> {
+    type Context<'a> = () where Self: 'a;
+
+    fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
+        todo!()
+    }
+}
+
 impl<N, NM, EM> WalkDirectDependencies for HashGraph<N, NM, EM>
 where
     HashGraph<N, NM, EM>: Graph,
@@ -264,6 +288,30 @@ pub struct HashGraphWalkDirectDependencies<N, NM, EM> {
 }
 
 impl<N, NM, EM> Walker for HashGraphWalkDirectDependencies<N, NM, EM> {
+    type Context<'a> = () where Self: 'a;
+
+    fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
+        todo!()
+    }
+}
+
+impl<N, NM, EM> WalkDependents for HashGraph<N, NM, EM>
+where
+    HashGraph<N, NM, EM>: Graph,
+{
+    type Walker = HashGraphWalkDependents<N, NM, EM>;
+
+    fn walk_dependents(&self, node: NodeId) -> Option<Self::Walker> {
+        todo!()
+    }
+}
+
+/// A walker over all nodes dependent on a given node within a [`HashGraph`].
+pub struct HashGraphWalkDependents<N, NM, EM> {
+    _p1: PhantomData<(N, NM, EM)>,
+}
+
+impl<N, NM, EM> Walker for HashGraphWalkDependents<N, NM, EM> {
     type Context<'a> = () where Self: 'a;
 
     fn next<'a>(&'a mut self, context: Self::Context<'a>) -> Option<NodeId> {
