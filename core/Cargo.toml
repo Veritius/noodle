@@ -12,8 +12,3 @@ default=[]
 
 # Major features
 std = []
-
-[dependencies.smallvec]
-version = "1.13"
-features = ["union", "const_generics"]
-optional = true

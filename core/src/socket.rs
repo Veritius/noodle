@@ -154,10 +154,10 @@ impl<'a> SocketValues<'a> {
             .map(|v| Self(v))
     }
 
-    /// Gets the [`Value`] for a given [`SocketId`], if present in the set.
-    pub fn get(&self, id: SocketId) -> Option<Value> {
-        self.0.search(|v| v.id.cmp(&id)).map(|v| v.value.clone())
-    }
+    // /// Gets the [`Value`] for a given [`SocketId`], if present in the set.
+    // pub fn get(&self, id: SocketId) -> Option<Value> {
+    //     self.0.search(|v| v.id.cmp(&id)).map(|v| v.value.clone())
+    // }
 }
 
 /// A [`Value`] associated with a [`SocketId`], used to pass values between nodes.
@@ -168,8 +168,8 @@ pub struct SocketValue {
     /// The ID of the socket.
     pub id: SocketId,
 
-    /// The value of the socket.
-    pub value: Value,
+    // /// The value of the socket.
+    // pub value: Value,
 }
 
 impl PartialEq for SocketValue {

@@ -1,60 +1,51 @@
-use std::{any::Any, sync::Arc};
+use std::any::TypeId;
 
-/// A type-erased reference-counted value used in node graph calculations.
-#[derive(Clone)]
-#[repr(transparent)]
-pub struct Value(ValueInner);
+pub trait Valuelike: 'static {
+    fn type_id(&self) -> ValueType;
+}
 
-impl Value {
-    /// Attempts to cast the [`Value`] to `T`. Fails if the value is not of type `T`.
-    #[inline(always)]
-    pub fn downcast<'a, T: Valuelike>(&'a self) -> Result<&'a T, TypeCastError> {
-        self.0.downcast::<T>()
-    }
-
-    /// Creates a new [`Value`] holding `value`.
-    #[inline(always)]
-    pub fn new<T: Valuelike>(value: T) -> Self {
-        Self(ValueInner::new(value))
+impl<T: Valuelike> Valuelike for [T] {
+    fn type_id(&self) -> ValueType {
+        ValueType::from_typeid(TypeId::of::<[T]>())
     }
 }
 
-impl AsRef<dyn Valuelike> for Value {
-    #[inline(always)]
-    fn as_ref(&self) -> &dyn Valuelike {
-        self.0.value.as_ref()
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct ValueType(ValueTypeInner);
+
+impl ValueType {
+    pub fn from_typeid(id: TypeId) -> Self {
+        ValueType(ValueTypeInner::Static(id))
     }
 }
 
-/// A type that can be put in a [`Value`].
-pub trait Valuelike: Any + Send + Sync + 'static {}
-
-impl<T> Valuelike for T where T: Any + Send + Sync + 'static {}
-
-#[derive(Clone)]
-struct ValueInner {
-    value: Arc<dyn Valuelike>,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+enum ValueTypeInner {
+    Static(TypeId),
 }
 
-impl ValueInner {
-    fn downcast<'a, T: Valuelike>(&'a self) -> Result<&'a T, TypeCastError> {
-        <dyn Any>::downcast_ref(&self.value).ok_or(TypeCastError)
-    }
-
-    fn new<T: Valuelike>(value: T) -> Self {
-        Self {
-            value: Arc::new(value),
+macro_rules! primitive {
+    ($type:ty) => {
+        impl Valuelike for $type {
+            fn type_id(&self) -> ValueType {
+                ValueType::from_typeid(TypeId::of::<$type>())
+            }
         }
-    }
+    };
 }
 
-impl AsRef<dyn Valuelike> for ValueInner {
-    #[inline(always)]
-    fn as_ref(&self) -> &dyn Valuelike {
-        self.value.as_ref()
-    }
-}
-
-/// Returned when attempting to cast a [`Value`] to a concrete type fails.
-#[derive(Debug, Clone, Copy)]
-pub struct TypeCastError;
+primitive!(bool);
+primitive!(char);
+primitive!(str);
+primitive!(f32);
+primitive!(f64);
+primitive!(u8);
+primitive!(u16);
+primitive!(u32);
+primitive!(u64);
+primitive!(u128);
+primitive!(i8);
+primitive!(i16);
+primitive!(i32);
+primitive!(i64);
+primitive!(i128);
