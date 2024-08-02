@@ -1,4 +1,4 @@
-use core::any::TypeId;
+use std::any::TypeId;
 
 pub trait Valuelike: 'static {
     fn type_id(&self) -> ValueType;
