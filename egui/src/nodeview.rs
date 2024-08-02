@@ -1,6 +1,6 @@
 //! Widgets for displaying [`Node`] objects in a graphical way.
 
-use egui::Widget;
+use egui::{Color32, Widget};
 use noodle_core::*;
 
 /// A builder for a node view.
@@ -14,6 +14,9 @@ pub struct NodeViewBuilder<'a, N: 'a> {
     node: N,
 
     title: Option<&'a str>,
+
+    title_color: Color32,
+    background_color: Color32,
 }
 
 impl<'a, N> NodeViewBuilder<'a, N> {
@@ -22,6 +25,9 @@ impl<'a, N> NodeViewBuilder<'a, N> {
             node,
 
             title: None,
+
+            title_color: Color32::LIGHT_BLUE,
+            background_color: Color32::DARK_GRAY,
         }
     }
 }
@@ -65,6 +71,18 @@ impl<'a, N> NodeViewBuilder<'a, N> {
     /// Defaults to `None` (the node's discriminator).
     pub fn title(mut self, name: Option<&'a str>) -> Self {
         self.title = name;
+        return self;
+    }
+
+    /// Changes the title color of the node.
+    pub fn title_color(mut self, color: Color32) -> Self {
+        self.title_color = color;
+        return self;
+    }
+
+    /// Changes the background color of the node.
+    pub fn background_color(mut self, color: Color32) -> Self {
+        self.background_color = color;
         return self;
     }
 }
