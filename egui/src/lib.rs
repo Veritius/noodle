@@ -5,3 +5,4 @@
 pub mod connections;
 pub mod graphview;
 pub mod nodeview;
+pub mod spawnmenu;

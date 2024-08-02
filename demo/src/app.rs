@@ -1,14 +1,14 @@
 use eframe::egui;
 use egui::Widget;
-// use noodle_bowl::simple::SimpleGraph;
-// use noodle_egui::graphview::GraphViewBuilder;
+use noodle_bowl::HashGraph;
+use noodle_egui::{graphview::GraphViewBuilder, spawnmenu::NodeSpawnMenuBuilder};
 use crate::{nodes::LocalNode, settings::AppSettings};
 
 pub(super) struct DemoApp {
     pub settings: AppSettings,
     show_settings: bool,
 
-    // pub graph: SimpleGraph<LocalNode>,
+    pub graph: HashGraph<LocalNode>,
 }
 
 impl eframe::App for DemoApp {
@@ -30,10 +30,16 @@ impl eframe::App for DemoApp {
             });
         }
 
+        egui::SidePanel::right("spawn")
+        .show(ctx, |ui| {
+            NodeSpawnMenuBuilder::new(&mut self.graph)
+                .ui(ui);
+        });
+
         egui::CentralPanel::default().show(ctx, |ui| {
-            // GraphViewBuilder::<&_, LocalNode>::new(&self.graph)
-            //     .direction(self.settings.graph_direction)
-            //     .ui(ui)
+            GraphViewBuilder::<&_, LocalNode>::new(&self.graph)
+                .direction(self.settings.graph_direction)
+                .ui(ui)
         });
     }
 }
@@ -44,7 +50,7 @@ impl Default for DemoApp {
             settings: AppSettings::default(),
             show_settings: false,
 
-            // graph: SimpleGraph::default(),
+            graph: HashGraph::default(),
         }
     }
 }
