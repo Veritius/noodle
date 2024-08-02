@@ -1,4 +1,5 @@
-use std::{any::Any, sync::Arc};
+use core::any::Any;
+use alloc::sync::Arc;
 
 /// A type-erased reference-counted value used in node graph calculations.
 #[derive(Clone)]
