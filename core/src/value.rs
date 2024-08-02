@@ -1,5 +1,39 @@
 use core::any::Any;
+use std::ops::Deref;
 use alloc::sync::Arc;
+
+/// A reference to a value.
+#[derive(Clone, Copy)]
+pub struct ValueRef<'a> {
+    value: &'a dyn Any,
+}
+
+impl<'a> ValueRef<'a> {
+    /// Returns a new [`ValueRef`] for `value`.
+    pub fn new<T: Any>(value: &'a T) -> ValueRef<'a> {
+        Self { value }
+    }
+
+    /// Returns the inner `dyn Any` borrow with the same lifetime as `self`.
+    #[inline]
+    pub fn inner_any(&'a self) -> &'a dyn Any {
+        self.value
+    }
+
+    /// Tries to cast the inner borrow to `T`.
+    #[inline]
+    pub fn downcast<T: Any>(&'a self) -> Option<&'a T> {
+        self.value.downcast_ref()
+    }
+}
+
+impl Deref for ValueRef<'_> {
+    type Target = dyn Any;
+
+    fn deref(&self) -> &Self::Target {
+        self.value
+    }
+}
 
 /// A type-erased reference-counted value used in node graph calculations.
 #[derive(Clone)]

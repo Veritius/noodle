@@ -145,17 +145,17 @@ impl<'a> OutputMask<'a> {
 
 /// A set of [`Value`] items associated with [`SocketId`] values.
 #[derive(Clone)]
-pub struct SocketValues<'a>(SortedUniqueSlice<'a, SocketValue>);
+pub struct SocketValues<'a>(SortedUniqueSlice<'a, SocketValue<'a>>);
 
 impl<'a> SocketValues<'a> {
     /// Try to create a new [`SocketValues`] set, checking if the slice is valid.
     pub fn new(slice: &'a [SocketValue]) -> Result<Self, SortedUniqueSliceError> {
-        SortedUniqueSlice::new(slice, |a,b| a.cmp(b))
+        SortedUniqueSlice::new(slice, |a,b| a.id.cmp(&b.id))
             .map(|v| Self(v))
     }
 
     /// Gets the [`Value`] for a given [`SocketId`], if present in the set.
-    pub fn get(&self, id: SocketId) -> Option<Value> {
+    pub fn get(&'a self, id: SocketId) -> Option<ValueRef<'a>> {
         self.0.search(|v| v.id.cmp(&id)).map(|v| v.value.clone())
     }
 }
@@ -164,30 +164,30 @@ impl<'a> SocketValues<'a> {
 /// 
 /// `SocketValue` implements [`PartialEq`], [`Eq`], [`PartialOrd`], and [`Ord`] according to its associated `SocketId`.
 #[derive(Clone)]
-pub struct SocketValue {
+pub struct SocketValue<'a> {
     /// The ID of the socket.
     pub id: SocketId,
 
     /// The value of the socket.
-    pub value: Value,
+    pub value: ValueRef<'a>,
 }
 
-impl PartialEq for SocketValue {
+impl PartialEq for SocketValue<'_> {
     fn eq(&self, other: &Self) -> bool {
         self.id.eq(&other.id)
     }
 }
 
-impl Eq for SocketValue {}
+impl Eq for SocketValue<'_> {}
 
-impl PartialOrd for SocketValue {
+impl PartialOrd for SocketValue<'_> {
     #[inline(always)]
     fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl Ord for SocketValue {
+impl Ord for SocketValue<'_> {
     fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         self.id.cmp(&other.id)
     }
