@@ -5,15 +5,3 @@ edition="2021"
 authors=["Veritius <veritiusgaming@gmail.com>"]
 license="MIT OR Apache-2.0"
 description="Computational node graphs"
-
-[features]
-# Feature sets
-default=[]
-
-# Major features
-std = []
-
-[dependencies.smallvec]
-version = "1.13"
-features = ["union", "const_generics"]
-optional = true
