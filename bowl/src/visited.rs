@@ -1,14 +1,15 @@
 use noodle_core::NodeId;
+use smallvec::SmallVec;
 
-pub(crate) struct Visited(Vec<NodeId>);
+pub(crate) struct Visited(SmallVec<[NodeId; 4]>);
 
 impl Visited {
     pub fn new() -> Self {
-        Self(Vec::new())
+        Self(SmallVec::new())
     }
 
     pub fn with_capacity(amt: usize) -> Self {
-        Self(Vec::with_capacity(amt))
+        Self(SmallVec::with_capacity(amt))
     }
 
     pub fn visit(&mut self, id: NodeId) -> bool {
