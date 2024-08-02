@@ -25,12 +25,14 @@ impl eframe::App for DemoApp {
 
         if self.show_settings {
             egui::SidePanel::left("settings")
+            .resizable(false)
             .show(ctx, |ui| {
                 self.settings.ui(ui);
             });
         }
 
         egui::SidePanel::right("spawn")
+        .resizable(false)
         .show(ctx, |ui| {
             NodeSpawnMenuBuilder::new(&mut self.graph)
                 .ui(ui);
