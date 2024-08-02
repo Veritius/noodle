@@ -5,7 +5,7 @@ use noodle_core::Graph;
 
 /// A menu for spawning nodes.
 pub struct NodeSpawnMenuBuilder<'a, G> {
-    graph: &'a G,
+    graph: &'a mut G,
 }
 
 impl<'a, G> NodeSpawnMenuBuilder<'a, G>
